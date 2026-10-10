@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 485" role="img" aria-label="Decode 2: feed 102, sample 103">
+<title>Decode 2: feed 102, sample 103</title>
+<desc>Trace stops here, before request finish. Blocks remain owned by R.</desc>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}</style>
+<rect width="960" height="485" fill="#fff"/>
+<text x="32" y="35" font-size="15" fill="#526174">STEP 9 / 9 · illustrative state · illustrative timing</text>
+<text x="32" y="78" font-size="28" font-weight="700">Decode 2: feed 102, sample 103</text>
+<rect x="32.0" y="134" width="285.3333333333333" height="246" rx="14" fill="#fff4d9" stroke="#a66a08" stroke-width="1.5"/>
+<text x="52.0" y="168" class="label">Decode input</text>
+<text x="52.0" y="208" class="body">schedule=1; budget</text>
+<text x="52.0" y="236" class="body">left=15</text>
+<text x="52.0" y="264" class="body">computed accounting</text>
+<text x="52.0" y="292" class="body">36 -&gt; 37</text>
+<rect x="52.0" y="332" width="50" height="32" rx="6" fill="#fff" stroke="#a66a08"/>
+<text x="77.0" y="354" class="token">102</text>
+<rect x="337.3333333333333" y="134" width="285.3333333333333" height="246" rx="14" fill="#e8f6ef" stroke="#168052" stroke-width="1.5"/>
+<text x="357.3333333333333" y="168" class="label">After execution</text>
+<text x="357.3333333333333" y="208" class="body">KV ready through</text>
+<text x="357.3333333333333" y="236" class="body">input 102</text>
+<text x="357.3333333333333" y="264" class="body">3 blocks still</text>
+<text x="357.3333333333333" y="292" class="body">sufficient</text>
+<rect x="642.6666666666666" y="134" width="285.3333333333333" height="246" rx="14" fill="#eaf2ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="662.6666666666666" y="168" class="label">Next output</text>
+<text x="662.6666666666666" y="208" class="body">sample ID 103;</text>
+<text x="662.6666666666666" y="236" class="body">known=38</text>
+<text x="662.6666666666666" y="264" class="body">computed=37; 103 has</text>
+<text x="662.6666666666666" y="292" class="body">no KV yet</text>
+<rect x="662.6666666666666" y="332" width="50" height="32" rx="6" fill="#fff" stroke="#2563eb"/>
+<text x="687.6666666666666" y="354" class="token">103</text>
+<text x="32" y="416" class="body">Trace stops here, before request finish. Blocks remain owned by R.</text>
+</svg>

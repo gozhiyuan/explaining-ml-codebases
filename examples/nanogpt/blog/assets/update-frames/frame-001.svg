@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 454" role="img" aria-label="Forward creates a scalar loss">
+<title>Forward creates a scalar loss</title>
+<desc>Eight target errors average into one loss. Parameters have not changed.</desc>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}</style>
+<rect width="960" height="429" fill="#fff"/>
+<text x="32" y="35" font-size="15" fill="#526174">STEP 2 / 5 · measured state · illustrative timing</text>
+<text x="32" y="78" font-size="28" font-weight="700">Forward creates a scalar loss</text>
+<rect x="32.0" y="134" width="438.0" height="190" rx="14" fill="#eaf2ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="52.0" y="168" class="label">Model output</text>
+<text x="52.0" y="208" class="body">logits float32 CPU [2,4,8]</text>
+<text x="52.0" y="236" class="body">loss: 2.056858 nats per target</text>
+<rect x="490.0" y="134" width="438.0" height="190" rx="14" fill="#f0f3f7" stroke="#526174" stroke-width="1.5"/>
+<text x="510.0" y="168" class="label">Parameter state</text>
+<text x="510.0" y="208" class="body">888 scalar parameters</text>
+<text x="510.0" y="236" class="body">unchanged by forward</text>
+<text x="32" y="360" class="body">Eight target errors average into one loss. Parameters have not changed.</text>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 454" role="img" aria-label="Clipping precedes AdamW">
+<title>Clipping precedes AdamW</title>
+<desc>The total norm bound is one. Clipping changes gradients, not parameters.</desc>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}</style>
+<rect width="960" height="429" fill="#fff"/>
+<text x="32" y="35" font-size="15" fill="#526174">STEP 4 / 5 · measured state · illustrative timing</text>
+<text x="32" y="78" font-size="28" font-weight="700">Clipping precedes AdamW</text>
+<rect x="32.0" y="134" width="438.0" height="190" rx="14" fill="#f1ebff" stroke="#7541b8" stroke-width="1.5"/>
+<text x="52.0" y="168" class="label">Gradient state</text>
+<text x="52.0" y="208" class="body">norm after clipping: 0.999999</text>
+<text x="52.0" y="236" class="body">clip bound: 1.0</text>
+<rect x="490.0" y="134" width="438.0" height="190" rx="14" fill="#fff4d9" stroke="#a66a08" stroke-width="1.5"/>
+<text x="510.0" y="168" class="label">AdamW settings</text>
+<text x="510.0" y="208" class="body">LR 0.001, betas (0.9,0.95)</text>
+<text x="510.0" y="236" class="body">matrix decay 0.1, vector decay 0.0</text>
+<text x="32" y="360" class="body">The total norm bound is one. Clipping changes gradients, not parameters.</text>
+</svg>

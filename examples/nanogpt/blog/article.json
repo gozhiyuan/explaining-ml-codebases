@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "title": "Why nanoGPT trains four next tokens at once",
+  "question": "How do two token windows become eight predictions and one parameter update?",
+  "audience": "Python engineer familiar with tensors, new to nanoGPT",
+  "scope": "one tiny CPU update",
+  "source": {
+    "url": "https://github.com/karpathy/nanoGPT",
+    "commit": "3adf61e154c3fe3fca428ad6bc3818b27a3b8291"
+  },
+  "assumptions": [
+    "B=2,T=4,D=8,H=2,V=8,L=1,dropout=0,bias=False,float32 CPU",
+    "Constructed token vocabulary",
+    "Batch and model each seeded separately at 1337",
+    "Snapshot durations illustrative",
+    "Recorded tests command ran from the supporting docs folder; article has its own validation script copy."
+  ],
+  "claims": [
+    {
+      "id": "windows",
+      "statement": "Targets are stream windows shifted one token to the right.",
+      "sources": [
+        {
+          "file": "train.py",
+          "symbol": "get_batch"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    },
+    {
+      "id": "causal",
+      "statement": "The SDPA call requests causal attention; CPU API availability does not imply CUDA kernel use.",
+      "sources": [
+        {
+          "file": "model.py",
+          "symbol": "CausalSelfAttention.forward"
+        },
+        {
+          "file": "model.py",
+          "symbol": "CausalSelfAttention.__init__"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    },
+    {
+      "id": "head",
+      "statement": "Targets select all-position logits; no targets select only final-position logits.",
+      "sources": [
+        {
+          "file": "model.py",
+          "symbol": "GPT.forward"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    },
+    {
+      "id": "sharing",
+      "statement": "Token embedding and vocabulary head share one Parameter.",
+      "sources": [
+        {
+          "file": "model.py",
+          "symbol": "GPT.__init__"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    },
+    {
+      "id": "update",
+      "statement": "One tiny CPU AdamW update changed parameters and reduced same-batch loss.",
+      "sources": [
+        {
+          "file": "model.py",
+          "symbol": "GPT.configure_optimizers"
+        }
+      ],
+      "evidence_status": "measured",
+      "command": "python tests/validate_step.py --repo \"$NANO_REPO\" --output assets/measurement.json",
+      "result": "pass; 2.056858 to 2.044125 nats; max token-weight change .001004860"
+    },
+    {
+      "id": "prefetch",
+      "statement": "The source fetches the next batch before backward, with no claimed CPU/GPU overlap in this CPU example.",
+      "sources": [
+        {
+          "file": "train.py",
+          "symbol": "<module>"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    }
+  ],
+  "figures": [
+    {
+      "id": "windows",
+      "asset": "assets/windows.svg",
+      "caption": "Measured shifted windows from fixture IDs",
+      "claim_ids": [
+        "windows"
+      ],
+      "evidence_status": "measured"
+    },
+    {
+      "id": "attention",
+      "asset": "assets/attention.svg",
+      "caption": "Reconstructed attention probabilities for batch zero head zero",
+      "claim_ids": [
+        "causal"
+      ],
+      "evidence_status": "measured"
+    },
+    {
+      "id": "update-player",
+      "asset": "assets/update-player.html",
+      "caption": "Measured update states with illustrative presentation durations",
+      "claim_ids": [
+        "update"
+      ],
+      "evidence_status": "measured"
+    },
+    {
+      "id": "token-flow-video",
+      "asset": "assets/token-flow.mp4",
+      "caption": "Forward tensor shapes for the measured tiny fixture",
+      "claim_ids": [
+        "head"
+      ],
+      "evidence_status": "illustrative"
+    },
+    {
+      "id": "attention-video",
+      "asset": "assets/attention.mp4",
+      "caption": "Illustrative attention math, not measured activations",
+      "claim_ids": [
+        "causal"
+      ],
+      "evidence_status": "illustrative"
+    },
+    {
+      "id": "token-flow-gif-preview",
+      "asset": "assets/token-flow.preview.gif",
+      "caption": "Forward tensor shapes; reduced-resolution preview of the original MP4",
+      "claim_ids": [
+        "head"
+      ],
+      "evidence_status": "illustrative",
+      "derived_from": "assets/token-flow.mp4"
+    },
+    {
+      "id": "attention-gif-preview",
+      "asset": "assets/attention.preview.gif",
+      "caption": "Illustrative attention calculation; reduced-resolution preview of the original MP4",
+      "claim_ids": [
+        "causal"
+      ],
+      "evidence_status": "illustrative",
+      "derived_from": "assets/attention.mp4"
+    }
+  ],
+  "uncertainties": [
+    "Full train.py process not run",
+    "Validation split and exhaustive offset boundaries not checked",
+    "Manual attention, nonzero dropout and exhaustive masking untested",
+    "Ignored targets and all-ignored batch untested",
+    "Full process, evaluation, accumulation, scaling and checkpoint/resume untested",
+    "HTML and player browser inspection blocked by file URL policy"
+  ],
+  "checks": [
+    {
+      "command": "python tests/validate_step.py --repo \"$NANO_REPO\" --output assets/measurement.json",
+      "outcome": "pass",
+      "boundary": "13 assertion groups; original model and source-extracted get_batch/get_lr; no full process"
+    },
+    {
+      "command": "Quick Look SVG thumbnail rendering",
+      "outcome": "pass",
+      "boundary": "Two worked SVGs visually inspected at desktop scale; mobile layout not browser-tested"
+    },
+    {
+      "command": "Quick Look SVG thumbnail rendering",
+      "outcome": "pass",
+      "boundary": "First, middle, last update SVG frames inspected. Interactive controls and mobile HTML remain unverified."
+    },
+    {
+      "command": "render_manim.py using Manim0.22.0, Cairo, LaTeX and FFmpeg",
+      "outcome": "pass",
+      "boundary": "Original CPU scenes rendered; FFprobe confirms H264; representative frames inspected; browser playback unverified"
+    },
+    {
+      "command": "Parent selected-source semantic review",
+      "outcome": "pass",
+      "boundary": "Reviewed loader/head/weight/update order for nanoGPT, and cap/free capacity/hash registration/computed counter/EngineCore order for vLLM; not exhaustive"
+    },
+    {
+      "command": "FFmpeg: fps=10, scale=720:-1, palettegen/paletteuse; FFprobe count_frames",
+      "outcome": "pass",
+      "boundary": "Reduced-resolution GIFs derived from the existing MP4s; frame counts/durations match; representative first/middle/final frames visually inspected"
+    },
+    {
+      "command": "POST /markdown with mode=gfm and repository context",
+      "outcome": "pass",
+      "boundary": "GitHub renderer retains 2 GIF images, 8 SVG images and 4 MP4 links; iframe/video tags absent; this is not browser playback or an interactive control test"
+    }
+  ]
+}

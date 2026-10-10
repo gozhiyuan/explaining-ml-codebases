@@ -1,0 +1,68 @@
+{
+  "status": "pass",
+  "contracts": 8,
+  "contract_groups": [
+    "whole-prefix hit/miss/last-token cap",
+    "manager normal/skipped lookup",
+    "idle-hit free demand",
+    "running block growth",
+    "successful allocation order",
+    "capacity-failure order",
+    "cold running arithmetic",
+    "decode running arithmetic"
+  ],
+  "environment": {
+    "python": "3.12.5",
+    "os": "Darwin",
+    "architecture": "arm64",
+    "device": "CPU only; no tensor/model execution"
+  },
+  "results_boundary": "Lookup/capacity/allocation execute original AST methods with stand-ins. Schedule sequences execute four original running-arithmetic statements; waiting branches are source-reviewed.",
+  "boundary": "Original AST methods and four arithmetic statements; fake coordinator/pool/spec; no whole Scheduler, GPU, tokenizer, model or real KV writes.",
+  "results": {
+    "warm_prefix_hit": 32,
+    "changed_first_block_hit": 0,
+    "exact_32_prompt_hit": 16,
+    "miss_schedule": [
+      16,
+      16,
+      3,
+      1,
+      1
+    ],
+    "hit_schedule": [
+      3,
+      1,
+      1
+    ],
+    "idle_hit_capacity_required": 3,
+    "cache_registration_before_execution": true
+  },
+  "source_records": [
+    {
+      "file": "vllm/v1/core/single_type_kv_cache_manager.py",
+      "symbol": "FullAttentionManager.find_longest_cache_hit",
+      "sha256": "dc6d2e64cc4cd8cbb3f4bd77d2d035038658d75b6e52f9ace0cf637a4897f71f"
+    },
+    {
+      "file": "vllm/v1/core/kv_cache_manager.py",
+      "symbol": "KVCacheManager.get_computed_blocks",
+      "sha256": "02c71da26bbac81629248ee42b0a71bd2db817d339894d647d2ff6b66fd5ad19"
+    },
+    {
+      "file": "vllm/v1/core/single_type_kv_cache_manager.py",
+      "symbol": "SingleTypeKVCacheManager.get_num_blocks_to_allocate",
+      "sha256": "dc6d2e64cc4cd8cbb3f4bd77d2d035038658d75b6e52f9ace0cf637a4897f71f"
+    },
+    {
+      "file": "vllm/v1/core/kv_cache_manager.py",
+      "symbol": "KVCacheManager.allocate_slots",
+      "sha256": "02c71da26bbac81629248ee42b0a71bd2db817d339894d647d2ff6b66fd5ad19"
+    },
+    {
+      "file": "vllm/v1/core/sched/scheduler.py",
+      "symbol": "Scheduler.schedule selected running-token arithmetic statements",
+      "sha256": "f34fce1c48a5ff73587ee0c7bd785df333644fc05fa461008cf71598ffe57da1"
+    }
+  ]
+}

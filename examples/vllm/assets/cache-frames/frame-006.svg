@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 485" role="img" aria-label="Either run: prefill completes and token 101 is sampled">
+<title>Either run: prefill completes and token 101 is sampled</title>
+<desc>Known IDs now include 101; KV ready only through prompt position 34.</desc>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}</style>
+<rect width="960" height="463" fill="#fff"/>
+<text x="32" y="35" font-size="15" fill="#526174">STEP 7 / 9 · illustrative state · illustrative timing</text>
+<text x="32" y="78" font-size="28" font-weight="700">Either run: prefill completes and token 101 is</text>
+<text x="32" y="112" font-size="28" font-weight="700">sampled</text>
+<rect x="32.0" y="168" width="438.0" height="190" rx="14" fill="#e8f6ef" stroke="#168052" stroke-width="1.5"/>
+<text x="52.0" y="202" class="label">Ready prompt KV</text>
+<text x="52.0" y="242" class="body">computed=35; positions 0..34 ready</text>
+<text x="52.0" y="270" class="body">logical blocks [1,2,3]</text>
+<rect x="490.0" y="168" width="438.0" height="190" rx="14" fill="#eaf2ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="510.0" y="202" class="label">Sampled output</text>
+<text x="510.0" y="242" class="body">known=36; new ID=101</text>
+<text x="510.0" y="270" class="body">ID 101 has no computed KV yet</text>
+<rect x="510.0" y="310" width="50" height="32" rx="6" fill="#fff" stroke="#2563eb"/>
+<text x="535.0" y="332" class="token">101</text>
+<text x="32" y="394" class="body">Known IDs now include 101; KV ready only through prompt position 34.</text>
+</svg>

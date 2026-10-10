@@ -1,0 +1,76 @@
+{
+  "source_commit": "d29f7f5c9294be8e489dac34d45a939b95a06336",
+  "source_read_only": true,
+  "core_skill": {
+    "outcome": "Useful narrow deep explanation with persistent ledger, source excerpts, CPU contract boundaries and state trace.",
+    "checks": {
+      "scanner": "passed: primary LLM inference/serving archetype; large repository",
+      "doc_checker": "3 docs: 0 errors, 0 warnings",
+      "evidence_collector": "2 subsystems, 5 steps",
+      "contracts": "eight grouped CPU contracts pass",
+      "upstream": "collection fails at missing tblib; no upstream tests executed"
+    },
+    "gaps": [
+      "No full Scheduler/worker lifecycle, actual hash construction, real free queue or GPU model comparison.",
+      "No fresh child reviewer under parent restriction; parent will review independently.",
+      "Model architecture card intentionally omitted for scheduler-only scope."
+    ],
+    "ambiguities": [
+      "Skill imports pyproject/engine config defaults into explanations unless the chosen example states values explicitly; this example labels all knobs as chosen.",
+      "Skill authorizes CPU snippets but no concrete extraction recipe; dependency-heavy imports required original AST extraction with stand-ins and an explicit limited boundary.",
+      "Direct local HTML verification conflicts with browser URL policy; skill appropriately permits an unverified rendering report."
+    ],
+    "process_issue": "Initial scanner used system python3 before source AGENTS was read; all later Python work went through uv and provided isolated runtime. No dependencies were installed by this agent."
+  },
+  "companion_skill": {
+    "outcome": "Standalone developer article with a single ownership-versus-compute argument; moves extensive reference tables out of narrative.",
+    "checks": {
+      "article_checker": "0 errors; 10 source references checked",
+      "html": "2 media embedded, 5 assets copied",
+      "figures": "first/middle/last static states rendered and inspected",
+      "relocation": "article HTML plus asset folder: five links resolve; player inline dependencies and static details present"
+    },
+    "boundaries": [
+      "No browser control/playback, responsive HTML or Mermaid runtime verification after file URL rejection.",
+      "Symbol checks and retained evidence cannot establish semantic correctness.",
+      "No MP4 requested; snapshot player and SVGs suffice for discrete allocation decisions."
+    ],
+    "behavior_notes": [
+      "Workflow separated article scope/argument from exhaustive explanation template.",
+      "Manifest claim statuses preserve source-reviewed versus illustrative distinctions.",
+      "Updated shared renderer now bundles JSON, script and evidence links, resolving earlier local-path warnings.",
+      "No Jekyll profile applied because deployment was not requested."
+    ]
+  },
+  "packaging": [
+    {
+      "export": "explain.html",
+      "status": "pass",
+      "relocation": "HTML and same-name asset directory copied into separate output QA directory",
+      "documents": 3,
+      "local_asset_links": 5,
+      "missing": [],
+      "player_self_contained": true,
+      "checks": "Structural only; no browser runtime controls, media playback or Mermaid rendering."
+    },
+    {
+      "export": "article.html",
+      "status": "pass",
+      "relocation": "HTML and same-name asset directory copied into separate output QA directory",
+      "documents": 1,
+      "local_asset_links": 5,
+      "missing": [],
+      "player_self_contained": true,
+      "checks": "Structural only; no browser runtime controls, media playback or Mermaid rendering."
+    }
+  ],
+  "parent_enrichment": {
+    "source_review": "Selected claims manually checked against pinned implementation; not exhaustive",
+    "animation_templates": [
+      "cache-reuse"
+    ],
+    "site_adaptation": "Jekyll profile staged and built in a scratch copy of the actual theme",
+    "evidence_mapping": "Facts doc names validated and corrected where needed",
+    "boundary": "Initial agent chose SVG/stepper; parent added original Manim examples to exercise the optional backend. HTML controls/mobile/playback remain unverified."
+  }
+}

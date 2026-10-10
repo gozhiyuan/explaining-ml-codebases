@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-09",
+  "unit_tests": {
+    "status": "pass",
+    "count": 19,
+    "command": "python -m unittest discover -s tests -v"
+  },
+  "skills": {
+    "core": "quick_validate passed",
+    "companion": "quick_validate passed",
+    "standalone_install": "blog-only rendered successfully; both install packages validated"
+  },
+  "public_cases": {
+    "nanogpt": {
+      "commit": "3adf61e154c3fe3fca428ad6bc3818b27a3b8291",
+      "cpu_assertion_groups": 13,
+      "loss_before": 2.0568580627441406,
+      "loss_after": 2.0441248416900635,
+      "doc_errors": 0,
+      "article_errors": 0,
+      "boundary": "No full train.py process, GPU or distributed run"
+    },
+    "vllm": {
+      "commit": "d29f7f5c9294be8e489dac34d45a939b95a06336",
+      "cpu_contract_groups": 8,
+      "doc_errors": 0,
+      "article_errors": 0,
+      "public_sha": "confirmed through upstream GitHub commit API",
+      "boundary": "Original selected AST methods/arithmetic with stand-ins; upstream collection failed at missing tblib; no complete scheduler/GPU/model run"
+    }
+  },
+  "videos": [
+    {
+      "template": "token-flow",
+      "codec": "h264",
+      "width": 1280,
+      "height": 720,
+      "duration_seconds": 14.4,
+      "fps": "30/1",
+      "status": "rendered",
+      "boundary": "Representative frames inspected, no browser playback; presentation timing illustrative"
+    },
+    {
+      "template": "attention",
+      "codec": "h264",
+      "width": 1280,
+      "height": 720,
+      "duration_seconds": 15.9,
+      "fps": "30/1",
+      "status": "rendered",
+      "boundary": "Representative frames inspected, no browser playback; presentation timing illustrative"
+    },
+    {
+      "template": "cache-reuse",
+      "codec": "h264",
+      "width": 1280,
+      "height": 720,
+      "duration_seconds": 13.7,
+      "fps": "30/1",
+      "status": "rendered",
+      "boundary": "Representative frames inspected, no browser playback; presentation timing illustrative"
+    }
+  ],
+  "source_bundle_reproduction": "attention sources.zip independently rendered; calculated metadata identical",
+  "jekyll": {
+    "status": "build passed",
+    "theme": "Scratch copy of an existing Jekyll site including working files",
+    "posts": [
+      {
+        "case": "nanogpt",
+        "post": "large-language-model/ml-training/2026/10/09/nanogpt-skill-evaluation.html",
+        "video_elements": 2,
+        "asset_links": 18,
+        "baseurl": "/skill-preview",
+        "status": "pass",
+        "boundary": "Built HTML and files; not browser playback"
+      },
+      {
+        "case": "vllm",
+        "post": "large-language-model/llm-inference/2026/10/09/vllm-skill-evaluation.html",
+        "video_elements": 1,
+        "asset_links": 14,
+        "baseurl": "/skill-preview",
+        "status": "pass",
+        "boundary": "Built HTML and files; not browser playback"
+      }
+    ],
+    "liquid_math_fixture": "Inline/fenced Liquid remains literal; LaTeX backslash survives actual Jekyll build",
+    "media_css": "Built article includes width-constrained video/iframe and removes the theme's 50vh figure cap; visual responsive inspection unverified"
+  },
+  "browser": "File URL inspection rejected by tool policy; responsive page layout, controls, Mermaid runtime and media playback unverified. No alternative protocol/surface used.",
+  "release": "MIT, portable installer and independently installable skill ZIP; no publication",
+  "github_markdown": {
+    "status": "API rendering passed",
+    "gif_previews": 3,
+    "static_trace_frames": {
+      "nanogpt": 5,
+      "vllm": 9
+    },
+    "mp4_files": "Existing 3 H264 1280x720 clips verified with FFprobe",
+    "boundary": "API retains images/links and removes active iframe/video tags. GIF first/middle/final frames inspected; repository browser playback and controls remain unverified."
+  }
+}

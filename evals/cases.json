@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "nanogpt",
+      "url": "https://github.com/karpathy/nanoGPT",
+      "commit": "3adf61e154c3fe3fca428ad6bc3818b27a3b8291",
+      "request": "Explain one tiny CPU training update from token windows through loss, backward and optimizer. Produce checked Markdown, HTML, persistent evidence and useful figures. Then turn it into a developer blog article with the companion skill.",
+      "scope": "B=2,T=4,V=8,D=8,H=2,L=1,dropout=0,bias=false; no full train.py process",
+      "execution": "Original model plus original AST-extracted get_batch/get_lr; 13 assertion groups",
+      "expected_invariants": ["X/Y shifted by one", "weight sharing", "causal prefix invariance", "all-position training versus final-position inference", "actual optimizer update and cleared gradients"]
+    },
+    {
+      "id": "vllm",
+      "url": "https://github.com/vllm-project/vllm",
+      "commit": "d29f7f5c9294be8e489dac34d45a939b95a06336",
+      "request": "Explain scheduler budgets and KV prefix reuse for one synchronous request. Produce checked Markdown, HTML, persistent evidence and useful figures. Then turn it into a developer blog article with the companion skill.",
+      "scope": "35 constructed prompt IDs; block/hash size16; budget16; one full-attention group; ready prior prefix32; two decode inputs",
+      "execution": "Original AST methods/arithmetic with dependency stand-ins; eight grouped CPU contracts; no GPU/runtime/model",
+      "expected_invariants": ["Cold schedule16,16,3,1,1", "Warm schedule3,1,1", "Exact32 last-token cap reuses16", "Idle prefix hits consume free capacity", "Hash registration and optimistic computed count do not imply ready KV"]
+    }
+  ]
+}

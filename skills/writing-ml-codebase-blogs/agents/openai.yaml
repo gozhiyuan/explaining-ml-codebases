@@ -1,0 +1,4 @@
+interface:
+  display_name: "ML Codebase Blogs"
+  short_description: "Turn code evidence into illustrated technical articles"
+  default_prompt: "Use $writing-ml-codebase-blogs to turn these verified explanation docs into an illustrated technical article."

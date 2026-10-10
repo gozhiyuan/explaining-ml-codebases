@@ -1,0 +1,407 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://github.com/karpathy/nanoGPT",
+    "commit": "3adf61e154c3fe3fca428ad6bc3818b27a3b8291",
+    "scope": "one tiny CPU training update"
+  },
+  "running_example": {
+    "evidence_status": "measured",
+    "config": {
+      "block_size": 4,
+      "vocab_size": 8,
+      "n_layer": 1,
+      "n_head": 2,
+      "n_embd": 8,
+      "dropout": 0.0,
+      "bias": false
+    },
+    "values": {
+      "fixture_stream": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        0,
+        1,
+        2,
+        3
+      ],
+      "x": [
+        [
+          7,
+          0,
+          1,
+          2
+        ],
+        [
+          5,
+          6,
+          7,
+          0
+        ]
+      ],
+      "y": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          6,
+          7,
+          0,
+          1
+        ]
+      ],
+      "loss_before": 2.0568580627441406,
+      "loss_after": 2.0441248416900635,
+      "lr": 0.001,
+      "parameter_count": 888
+    },
+    "seed": 1337,
+    "assumptions": [
+      "Fixture stream IDs are invented, not real text token IDs.",
+      "Batch and model seeds reset separately.",
+      "No full train.py process execution."
+    ],
+    "provenance": {
+      "command": "python tests/validate_step.py --repo \"$NANO_REPO\" --output assets/measurement.json",
+      "environment": {
+        "python": "3.12.5",
+        "torch": "2.14.1",
+        "numpy": "2.5.3",
+        "platform": "Darwin",
+        "machine": "arm64",
+        "device": "cpu",
+        "threads": 1
+      },
+      "result": "pass: 13 assertion groups",
+      "artifacts": [
+        "assets/measurement.json",
+        "tests/validate_step.py"
+      ]
+    }
+  },
+  "subsystems": [
+    {
+      "doc": "model.md",
+      "facts": {
+        "entry_points": [
+          "model.py::GPT.forward"
+        ],
+        "components": [
+          {
+            "name": "GPT",
+            "file": "model.py",
+            "role": "tiny CPU golden path",
+            "calls": []
+          }
+        ],
+        "steps": [
+          {
+            "id": "model.A1",
+            "name": "Embedding",
+            "input": "X [2,4] plus generated positions [4]",
+            "output": "float32 CPU embeddings [2,4,8]",
+            "caller": "GPT.forward",
+            "condition": "T<=block_size",
+            "code": [
+              "model.py::GPT.forward",
+              "model.py::GPT.__init__"
+            ],
+            "tests": [
+              {
+                "command": "python tests/validate_step.py --repo \"$NANO_REPO\" --output assets/measurement.json",
+                "status": "pass",
+                "kind": "external_validation",
+                "file": "tests/validate_step.py",
+                "result": "13 assertion groups; full process not run"
+              }
+            ],
+            "gap": null
+          },
+          {
+            "id": "model.A2",
+            "name": "Causal block",
+            "input": "float32 CPU embeddings [2,4,8]",
+            "output": "final hidden [2,4,8]",
+            "caller": "GPT.forward",
+            "condition": "SDPA API present; dropout=0",
+            "code": [
+              "model.py::Block.forward",
+              "model.py::CausalSelfAttention.forward",
+              "model.py::MLP.forward",
+              "model.py::LayerNorm.forward"
+            ],
+            "tests": [
+              {
+                "command": "python tests/validate_step.py --repo \"$NANO_REPO\" --output assets/measurement.json",
+                "status": "pass",
+                "kind": "external_validation",
+                "file": "tests/validate_step.py",
+                "result": "13 assertion groups; full process not run"
+              }
+            ],
+            "gap": "Manual branch, nonzero dropout and exhaustive masking untested"
+          },
+          {
+            "id": "model.A3",
+            "name": "Head and CE",
+            "input": "hidden [2,4,8], targets [2,4]",
+            "output": "logits [2,4,8], scalar CE=2.056858",
+            "caller": "GPT.forward",
+            "condition": "targets is not None",
+            "code": [
+              "model.py::GPT.forward"
+            ],
+            "tests": [
+              {
+                "command": "python tests/validate_step.py --repo \"$NANO_REPO\" --output assets/measurement.json",
+                "status": "pass",
+                "kind": "external_validation",
+                "file": "tests/validate_step.py",
+                "result": "13 assertion groups; full process not run"
+              }
+            ],
+            "gap": "Ignored targets and all-ignored batch untested"
+          }
+        ],
+        "terms": [],
+        "shapes": [],
+        "unverified": [],
+        "off_golden_path": [
+          "GPU",
+          "DDP",
+          "checkpoint/resume",
+          "pretrained initialization"
+        ],
+        "source_claims": [
+          {
+            "claim": "Token and output weights share one Parameter",
+            "file": "model.py",
+            "symbol": "GPT.__init__",
+            "status": "source_reviewed_and_measured"
+          },
+          {
+            "claim": "SDPA selection is API availability, not hardware detection",
+            "file": "model.py",
+            "symbol": "CausalSelfAttention.__init__",
+            "status": "source_reviewed_and_measured"
+          },
+          {
+            "claim": "All-position head with targets and last-position head without targets",
+            "file": "model.py",
+            "symbol": "GPT.forward",
+            "status": "source_reviewed_and_measured"
+          },
+          {
+            "claim": "Decay uses parameter dimensionality >=2",
+            "file": "model.py",
+            "symbol": "GPT.configure_optimizers",
+            "status": "source_reviewed_and_measured"
+          },
+          {
+            "claim": "LayerNorm epsilon 1e-5; MLP expansion 4D; pre-norm residuals",
+            "file": "model.py",
+            "symbol": "LayerNorm,MLP,Block",
+            "status": "source_reviewed"
+          }
+        ],
+        "surprises": [
+          "CPU SDPA does not imply CUDA Flash Attention",
+          "Targets already shifted by loader",
+          "train.py max_iters termination is after update"
+        ]
+      }
+    },
+    {
+      "doc": "train.md",
+      "facts": {
+        "entry_points": [
+          "train.py"
+        ],
+        "components": [
+          {
+            "name": "get_batch",
+            "file": "train.py",
+            "role": "tiny CPU golden path",
+            "calls": []
+          }
+        ],
+        "steps": [
+          {
+            "id": "train.A1",
+            "name": "Shifted windows",
+            "input": "Fixture uint16 stream, B=2,T=4",
+            "output": "int64 CPU X,Y [2,4]",
+            "caller": "training process",
+            "condition": "split=train and device=cpu",
+            "code": [
+              "train.py::get_batch"
+            ],
+            "tests": [
+              {
+                "command": "python tests/validate_step.py --repo \"$NANO_REPO\" --output assets/measurement.json",
+                "status": "pass",
+                "kind": "external_validation",
+                "file": "tests/validate_step.py",
+                "result": "13 assertion groups; full process not run"
+              }
+            ],
+            "gap": "Validation split and exhaustive offset boundaries not checked"
+          },
+          {
+            "id": "train.B1",
+            "name": "LR and optimizer",
+            "input": "iteration=0; 888 parameters",
+            "output": "LR=.001; AdamW groups decay .1/.0",
+            "caller": "training process",
+            "condition": "CPU disables fused AdamW",
+            "code": [
+              "train.py::get_lr",
+              "model.py::GPT.configure_optimizers"
+            ],
+            "tests": [
+              {
+                "command": "python tests/validate_step.py --repo \"$NANO_REPO\" --output assets/measurement.json",
+                "status": "pass",
+                "kind": "external_validation",
+                "file": "tests/validate_step.py",
+                "result": "13 assertion groups; full process not run"
+              }
+            ],
+            "gap": null
+          },
+          {
+            "id": "train.B2",
+            "name": "Update",
+            "input": "loss scalar 2.056858 and computation graph",
+            "output": "changed parameters, all gradients None, same-batch loss 2.044125",
+            "caller": "training loop",
+            "condition": "A=1; float32; grad_clip=1",
+            "code": [
+              "train.py::module-level training loop"
+            ],
+            "tests": [
+              {
+                "command": "python tests/validate_step.py --repo \"$NANO_REPO\" --output assets/measurement.json",
+                "status": "pass",
+                "kind": "external_validation",
+                "file": "tests/validate_step.py",
+                "result": "13 assertion groups; full process not run"
+              }
+            ],
+            "gap": "Full process, evaluation, accumulation, scaling and checkpoint/resume untested"
+          }
+        ],
+        "terms": [],
+        "shapes": [],
+        "unverified": [],
+        "off_golden_path": [
+          "GPU",
+          "DDP",
+          "checkpoint/resume",
+          "pretrained initialization"
+        ],
+        "source_claims": [
+          {
+            "claim": "Sampler upper bound len(data)-T is exclusive",
+            "file": "train.py",
+            "symbol": "get_batch",
+            "status": "source_reviewed"
+          },
+          {
+            "claim": "CPU uses nullcontext",
+            "file": "train.py",
+            "symbol": "ctx assignment",
+            "status": "source_reviewed"
+          },
+          {
+            "claim": "get_lr warmup adds one to numerator and denominator",
+            "file": "train.py",
+            "symbol": "get_lr",
+            "status": "source_reviewed"
+          },
+          {
+            "claim": "Next batch fetch precedes backward",
+            "file": "train.py",
+            "symbol": "module-level training loop",
+            "status": "source_reviewed"
+          },
+          {
+            "claim": "Termination uses iter_num > max_iters after increment",
+            "file": "train.py",
+            "symbol": "module-level training loop",
+            "status": "source_reviewed"
+          },
+          {
+            "claim": "Initial evaluation precedes update",
+            "file": "train.py",
+            "symbol": "module-level training loop",
+            "status": "source_reviewed"
+          },
+          {
+            "claim": "Checkpoint includes model optimizer model_args iter_num best_val_loss config",
+            "file": "train.py",
+            "symbol": "checkpoint dictionary",
+            "status": "source_reviewed"
+          }
+        ],
+        "surprises": [
+          "CPU SDPA does not imply CUDA Flash Attention",
+          "Targets already shifted by loader",
+          "train.py max_iters termination is after update"
+        ]
+      }
+    }
+  ],
+  "visuals": [
+    {
+      "id": "windows",
+      "question": "Which token does each input position predict?",
+      "doc": "index.md",
+      "takeaway": "Targets shift the same stream by one position.",
+      "kind": "svg",
+      "assets": [
+        "assets/windows.svg"
+      ],
+      "step_ids": [
+        "train.A1"
+      ],
+      "source_symbols": [
+        "train.py::get_batch"
+      ],
+      "assumptions": [
+        "Invented eight-class fixture, no real text tokenization."
+      ],
+      "evidence_status": "measured"
+    },
+    {
+      "id": "attention",
+      "question": "Can a query position see later tokens?",
+      "doc": "model.md",
+      "takeaway": "The causal mask suppresses every entry above the diagonal.",
+      "kind": "svg",
+      "assets": [
+        "assets/attention.svg"
+      ],
+      "step_ids": [
+        "model.A2"
+      ],
+      "source_symbols": [
+        "model.py::CausalSelfAttention.forward"
+      ],
+      "assumptions": [
+        "Reconstructed probability matrix, not internal SDPA output.",
+        "Dropout zero."
+      ],
+      "evidence_status": "measured"
+    }
+  ]
+}

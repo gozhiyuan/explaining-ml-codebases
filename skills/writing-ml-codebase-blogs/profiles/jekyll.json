@@ -1,0 +1,9 @@
+{
+  "name": "jekyll-post",
+  "front_matter": {"layout": "post", "categories": ["machine-learning"], "tags": []},
+  "strip_first_heading": true,
+  "asset_roots": {"image": "assets/images", "video": "assets/videos", "interactive": "assets/interactive", "data": "assets/data"},
+  "math": "katex",
+  "content_selector": ".post-content",
+  "description": "Starting profile for a Jekyll post. Verify layout, title rendering, math support, content selector and asset paths against the target site before use."
+}

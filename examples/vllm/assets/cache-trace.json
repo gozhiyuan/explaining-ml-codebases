@@ -1,0 +1,296 @@
+{
+  "title": "One V1 request: cold versus warm KV prefix",
+  "description": "Source-grounded illustrative snapshots. No vLLM model ran. Durations are presentation choices, not timing data.",
+  "evidence_status": "illustrative",
+  "frames": [
+    {
+      "title": "R arrives: two alternative cache states",
+      "caption": "Illustrative IDs 1..35; block size=16, compute/input budgets 16. Cold and warm are separate runs.",
+      "duration": 3,
+      "panels": [
+        {
+          "label": "Request R",
+          "tone": "blue",
+          "items": [
+            "known=35; computed=0",
+            "two full blocks and 3 tail tokens"
+          ],
+          "tokens": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "label": "Cold cache",
+          "tone": "gray",
+          "items": [
+            "No matching cached blocks"
+          ]
+        },
+        {
+          "label": "Warm completed cache",
+          "tone": "green",
+          "items": [
+            "h1 -> block 1, h2 -> block 2",
+            "ready prefix=32; refs=0,0"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Cold schedule 1: reserve block 1",
+      "caption": "Registration happens within allocation; this chunk has not executed yet.",
+      "duration": 3,
+      "panels": [
+        {
+          "label": "Budget",
+          "tone": "blue",
+          "items": [
+            "schedule=16; budget left=0",
+            "computed accounting: 0 -> 16"
+          ]
+        },
+        {
+          "label": "Block 1",
+          "tone": "amber",
+          "items": [
+            "positions 0..15 pending",
+            "h1 registered; ref=1"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Cold execute 1, then schedule 2",
+      "caption": "Sequential step boundary: block 1 is ready before the second chunk starts.",
+      "duration": 3,
+      "panels": [
+        {
+          "label": "Block 1",
+          "tone": "green",
+          "items": [
+            "positions 0..15 ready",
+            "ref=1"
+          ]
+        },
+        {
+          "label": "Block 2",
+          "tone": "amber",
+          "items": [
+            "positions 16..31 pending",
+            "h2 registered; ref=1"
+          ]
+        },
+        {
+          "label": "Budget",
+          "tone": "blue",
+          "items": [
+            "schedule=16; budget left=0",
+            "computed accounting: 16 -> 32"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Cold final prefill schedules 3 tail tokens",
+      "caption": "Blocks 1 and 2 now ready; block 3 allocated. Three new positions are pending.",
+      "duration": 3,
+      "panels": [
+        {
+          "label": "Prefix",
+          "tone": "green",
+          "items": [
+            "blocks [1,2], 32 ready inputs"
+          ]
+        },
+        {
+          "label": "Tail block 3",
+          "tone": "amber",
+          "items": [
+            "positions 32..34 pending",
+            "35..47 unused; no full hash"
+          ],
+          "tokens": [
+            33,
+            34,
+            35
+          ]
+        },
+        {
+          "label": "Budget",
+          "tone": "blue",
+          "items": [
+            "schedule=3; budget left=13",
+            "computed accounting: 32 -> 35"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Warm lookup: skip 32 ready tokens",
+      "caption": "Prior producer completed. max hit=34; floor(34/16)=2 full blocks.",
+      "duration": 3,
+      "panels": [
+        {
+          "label": "Lookup result",
+          "tone": "green",
+          "items": [
+            "hit blocks [1,2]; hit=32",
+            "shared boundary=0"
+          ]
+        },
+        {
+          "label": "New work",
+          "tone": "blue",
+          "items": [
+            "35 - 32 = 3 tokens",
+            "No compute charge for 32 reused IDs"
+          ],
+          "tokens": [
+            33,
+            34,
+            35
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Warm allocation: own prefix and reserve suffix",
+      "caption": "One newly allocated block; two idle hits also consume free capacity.",
+      "duration": 3,
+      "panels": [
+        {
+          "label": "Ready reused blocks",
+          "tone": "green",
+          "items": [
+            "block 1: ref 0 -> 1",
+            "block 2: ref 0 -> 1"
+          ]
+        },
+        {
+          "label": "New suffix block 3",
+          "tone": "amber",
+          "items": [
+            "3 inputs pending; 13 spare slots",
+            "new allocation returns [3]"
+          ],
+          "tokens": [
+            33,
+            34,
+            35
+          ]
+        },
+        {
+          "label": "Capacity and budget",
+          "tone": "purple",
+          "items": [
+            "ceil(35/16)=3 logical blocks",
+            "free capacity 10 -> 7",
+            "schedule=3; budget left=13"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Either run: prefill completes and token 101 is sampled",
+      "caption": "Known IDs now include 101; KV ready only through prompt position 34.",
+      "duration": 3,
+      "panels": [
+        {
+          "label": "Ready prompt KV",
+          "tone": "green",
+          "items": [
+            "computed=35; positions 0..34 ready",
+            "logical blocks [1,2,3]"
+          ]
+        },
+        {
+          "label": "Sampled output",
+          "tone": "blue",
+          "items": [
+            "known=36; new ID=101",
+            "ID 101 has no computed KV yet"
+          ],
+          "tokens": [
+            101
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Decode 1: feed 101, sample 102",
+      "caption": "One new input fits existing block 3; no new physical block.",
+      "duration": 3,
+      "panels": [
+        {
+          "label": "Decode input",
+          "tone": "amber",
+          "items": [
+            "schedule=1; budget left=15",
+            "computed accounting 35 -> 36"
+          ],
+          "tokens": [
+            101
+          ]
+        },
+        {
+          "label": "After execution",
+          "tone": "green",
+          "items": [
+            "KV for 101 becomes ready"
+          ]
+        },
+        {
+          "label": "Next output",
+          "tone": "blue",
+          "items": [
+            "sample ID 102; known=37",
+            "computed=36; 102 awaits decode"
+          ],
+          "tokens": [
+            102
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Decode 2: feed 102, sample 103",
+      "caption": "Trace stops here, before request finish. Blocks remain owned by R.",
+      "duration": 3,
+      "panels": [
+        {
+          "label": "Decode input",
+          "tone": "amber",
+          "items": [
+            "schedule=1; budget left=15",
+            "computed accounting 36 -> 37"
+          ],
+          "tokens": [
+            102
+          ]
+        },
+        {
+          "label": "After execution",
+          "tone": "green",
+          "items": [
+            "KV ready through input 102",
+            "3 blocks still sufficient"
+          ]
+        },
+        {
+          "label": "Next output",
+          "tone": "blue",
+          "items": [
+            "sample ID 103; known=38",
+            "computed=37; 103 has no KV yet"
+          ],
+          "tokens": [
+            103
+          ]
+        }
+      ]
+    }
+  ]
+}

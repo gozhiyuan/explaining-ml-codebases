@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 485" role="img" aria-label="R arrives: two alternative cache states">
+<title>R arrives: two alternative cache states</title>
+<desc>Illustrative IDs 1..35; block size=16, compute/input budgets 16. Cold and warm are separate runs.</desc>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}</style>
+<rect width="960" height="482" fill="#fff"/>
+<text x="32" y="35" font-size="15" fill="#526174">STEP 1 / 9 · illustrative state · illustrative timing</text>
+<text x="32" y="78" font-size="28" font-weight="700">R arrives: two alternative cache states</text>
+<rect x="32.0" y="134" width="285.3333333333333" height="218" rx="14" fill="#eaf2ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="52.0" y="168" class="label">Request R</text>
+<text x="52.0" y="208" class="body">known=35; computed=0</text>
+<text x="52.0" y="236" class="body">two full blocks and 3</text>
+<text x="52.0" y="264" class="body">tail tokens</text>
+<rect x="52.0" y="304" width="50" height="32" rx="6" fill="#fff" stroke="#2563eb"/>
+<text x="77.0" y="326" class="token">1</text>
+<rect x="110.0" y="304" width="50" height="32" rx="6" fill="#fff" stroke="#2563eb"/>
+<text x="135.0" y="326" class="token">2</text>
+<rect x="168.0" y="304" width="50" height="32" rx="6" fill="#fff" stroke="#2563eb"/>
+<text x="193.0" y="326" class="token">3</text>
+<rect x="226.0" y="304" width="50" height="32" rx="6" fill="#fff" stroke="#2563eb"/>
+<text x="251.0" y="326" class="token">4</text>
+<rect x="337.3333333333333" y="134" width="285.3333333333333" height="218" rx="14" fill="#f0f3f7" stroke="#526174" stroke-width="1.5"/>
+<text x="357.3333333333333" y="168" class="label">Cold cache</text>
+<text x="357.3333333333333" y="208" class="body">No matching cached</text>
+<text x="357.3333333333333" y="236" class="body">blocks</text>
+<rect x="642.6666666666666" y="134" width="285.3333333333333" height="218" rx="14" fill="#e8f6ef" stroke="#168052" stroke-width="1.5"/>
+<text x="662.6666666666666" y="168" class="label">Warm completed cache</text>
+<text x="662.6666666666666" y="208" class="body">h1 -&gt; block 1, h2 -&gt;</text>
+<text x="662.6666666666666" y="236" class="body">block 2</text>
+<text x="662.6666666666666" y="264" class="body">ready prefix=32;</text>
+<text x="662.6666666666666" y="292" class="body">refs=0,0</text>
+<text x="32" y="388" class="body">Illustrative IDs 1..35; block size=16, compute/input budgets 16. Cold and warm are</text>
+<text x="32" y="413" class="body">separate runs.</text>
+</svg>

@@ -1,0 +1,495 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://github.com/vllm-project/vllm",
+    "commit": "d29f7f5c9294be8e489dac34d45a939b95a06336",
+    "scope": "one synchronous request with prefix-cache hit/miss"
+  },
+  "running_example": {
+    "evidence_status": "illustrative",
+    "config": {
+      "block_size": 16,
+      "hash_block_size": 16,
+      "max_num_scheduled_tokens": 16,
+      "max_num_batched_tokens": 16,
+      "max_num_seqs": 1,
+      "max_model_len": 128,
+      "enable_chunked_prefill": true,
+      "enable_prefix_caching": true,
+      "long_prefill_token_threshold": 0,
+      "num_gpu_blocks": 11,
+      "async_scheduling": false,
+      "scheduler_reserve_full_isl": false,
+      "speculative_config": null,
+      "tensor_parallel_size": 1,
+      "pipeline_parallel_size": 1
+    },
+    "values": {
+      "request_R_prompt": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "illustrative_sampled_tokens": [
+        101,
+        102,
+        103
+      ],
+      "warm_cache_full_blocks": {
+        "h1": 1,
+        "h2": 2
+      },
+      "miss_schedule": [
+        16,
+        16,
+        3,
+        1,
+        1
+      ],
+      "hit_schedule": [
+        3,
+        1,
+        1
+      ]
+    },
+    "assumptions": [
+      "Token IDs are constructed; no tokenizer or model output was measured.",
+      "Dense decoder-only, one full-attention cache group; hash and physical block sizes equal.",
+      "Warm cache is a completed prior request, not an in-flight producer.",
+      "Synchronous sequential steps; no eviction, connectors, encoder input, speculative tokens or fine-grained hits.",
+      "Toy pool counts model block metadata, not bytes or a measured GPU capacity."
+    ],
+    "seed": null,
+    "provenance": "Constructed fixture-like values. Numeric transitions checked with original source AST methods and selected arithmetic; full vLLM imports fail at tblib in repository conftest.",
+    "limited_test_artifact": "tests/source-contract-results.json"
+  },
+  "subsystems": [
+    {
+      "doc": "kv-cache.md",
+      "facts": {
+        "entry_points": [
+          "KVCacheManager.get_computed_blocks"
+        ],
+        "components": [],
+        "steps": [
+          {
+            "id": "kv.A1",
+            "name": "Whole-prefix cache lookup",
+            "input": {
+              "prompt_length": 35,
+              "block_size": 16,
+              "index": [
+                "h1",
+                "h2"
+              ]
+            },
+            "output": {
+              "hit_tokens": 32,
+              "block_ids": [
+                1,
+                2
+              ],
+              "shared_prefix_boundary": 0,
+              "exact_32_prompt_hit": 16
+            },
+            "caller": "Scheduler._get_local_prefix_cache_hit",
+            "owner": "KVCacheManager and FullAttentionManager",
+            "condition": "One group, equal hash and physical granularity, completed warm producer",
+            "code": [
+              {
+                "file": "vllm/v1/core/kv_cache_manager.py",
+                "symbol": "KVCacheManager.get_computed_blocks"
+              },
+              {
+                "file": "vllm/v1/core/single_type_kv_cache_manager.py",
+                "symbol": "FullAttentionManager.find_longest_cache_hit"
+              }
+            ],
+            "tests": [
+              {
+                "command": "python tests/source_contracts.py REPO_ROOT",
+                "status": "pass",
+                "boundary": "Original methods, identity resolver, fake map/spec"
+              }
+            ],
+            "gap": "Actual hash construction and real pool not run"
+          },
+          {
+            "id": "kv.A2",
+            "name": "Capacity and attachment",
+            "input": {
+              "hit": 32,
+              "new": 3,
+              "idle_hit_refs": [
+                0,
+                0
+              ],
+              "free_blocks": 10
+            },
+            "output": {
+              "logical_blocks": 3,
+              "new_blocks": 1,
+              "free_capacity_demand": 3,
+              "illustrative_free_after": 7
+            },
+            "caller": "Scheduler.schedule",
+            "owner": "KVCacheManager/SingleTypeKVCacheManager/BlockPool",
+            "condition": "Normal admission, no full-sequence reserve/watermark/lookahead/external",
+            "code": [
+              {
+                "file": "vllm/v1/core/kv_cache_manager.py",
+                "symbol": "KVCacheManager.allocate_slots"
+              },
+              {
+                "file": "vllm/v1/core/single_type_kv_cache_manager.py",
+                "symbol": "SingleTypeKVCacheManager.get_num_blocks_to_allocate"
+              },
+              {
+                "file": "vllm/v1/core/block_pool.py",
+                "symbol": "BlockPool.touch"
+              }
+            ],
+            "tests": [
+              {
+                "command": "python tests/source_contracts.py REPO_ROOT",
+                "status": "pass",
+                "boundary": "Original count and allocation, fake coordinator/pool"
+              }
+            ],
+            "gap": "Real ref count/free queue attachment is source reviewed"
+          },
+          {
+            "id": "kv.A3",
+            "name": "Register full blocks before execution",
+            "input": {
+              "known_tokens": 35,
+              "allocated_slots": 48
+            },
+            "output": {
+              "registered_full_blocks": 2,
+              "partial_tail_tokens": 3,
+              "readiness": "Pending until executor completion for newly scheduled work"
+            },
+            "caller": "KVCacheManager.allocate_slots",
+            "owner": "SingleTypeKVCacheManager/BlockPool",
+            "condition": "Caching enabled; no delayed remote loading; finalized known tokens",
+            "code": [
+              {
+                "file": "vllm/v1/core/kv_cache_manager.py",
+                "symbol": "KVCacheManager.allocate_slots"
+              },
+              {
+                "file": "vllm/v1/core/single_type_kv_cache_manager.py",
+                "symbol": "SingleTypeKVCacheManager.cache_blocks"
+              },
+              {
+                "file": "vllm/v1/core/block_pool.py",
+                "symbol": "BlockPool.cache_full_blocks"
+              }
+            ],
+            "tests": [
+              {
+                "command": "python tests/source_contracts.py REPO_ROOT",
+                "status": "pass",
+                "boundary": "Original allocation call order with recording fake coordinator"
+              }
+            ],
+            "gap": "Real GPU KV readiness not measured"
+          }
+        ],
+        "terms": [],
+        "unverified": [
+          "No actual model/tokenizer/GPU execution; illustrated outputs have no measured logits or text."
+        ],
+        "off_golden_path": [
+          "Token IDs are constructed; no tokenizer or model output was measured.",
+          "Dense decoder-only, one full-attention cache group; hash and physical block sizes equal.",
+          "Warm cache is a completed prior request, not an in-flight producer.",
+          "Synchronous sequential steps; no eviction, connectors, encoder input, speculative tokens or fine-grained hits.",
+          "Toy pool counts model block metadata, not bytes or a measured GPU capacity."
+        ],
+        "shapes": [],
+        "surprises": [
+          "Scheduler computed count advances before execution completes.",
+          "Prefix hit tokens cost no new compute budget but idle hit blocks consume free capacity.",
+          "Hash index registration is not a KV readiness guarantee."
+        ],
+        "verification": {
+          "contracts": {
+            "status": "pass",
+            "contracts": 8,
+            "contract_groups": [
+              "whole-prefix hit/miss/last-token cap",
+              "manager normal/skipped lookup",
+              "idle-hit free demand",
+              "running block growth",
+              "successful allocation order",
+              "capacity-failure order",
+              "cold running arithmetic",
+              "decode running arithmetic"
+            ],
+            "environment": {
+              "python": "3.12.5",
+              "os": "Darwin",
+              "architecture": "arm64",
+              "device": "CPU only; no tensor/model execution"
+            },
+            "results_boundary": "Lookup/capacity/allocation execute original AST methods with stand-ins. Schedule sequences execute four original running-arithmetic statements; waiting branches are source-reviewed.",
+            "boundary": "Original AST methods and four arithmetic statements; fake coordinator/pool/spec; no whole Scheduler, GPU, tokenizer, model or real KV writes.",
+            "results": {
+              "warm_prefix_hit": 32,
+              "changed_first_block_hit": 0,
+              "exact_32_prompt_hit": 16,
+              "miss_schedule": [
+                16,
+                16,
+                3,
+                1,
+                1
+              ],
+              "hit_schedule": [
+                3,
+                1,
+                1
+              ],
+              "idle_hit_capacity_required": 3,
+              "cache_registration_before_execution": true
+            },
+            "source_records": [
+              {
+                "file": "vllm/v1/core/single_type_kv_cache_manager.py",
+                "symbol": "FullAttentionManager.find_longest_cache_hit",
+                "sha256": "dc6d2e64cc4cd8cbb3f4bd77d2d035038658d75b6e52f9ace0cf637a4897f71f"
+              },
+              {
+                "file": "vllm/v1/core/kv_cache_manager.py",
+                "symbol": "KVCacheManager.get_computed_blocks",
+                "sha256": "02c71da26bbac81629248ee42b0a71bd2db817d339894d647d2ff6b66fd5ad19"
+              },
+              {
+                "file": "vllm/v1/core/single_type_kv_cache_manager.py",
+                "symbol": "SingleTypeKVCacheManager.get_num_blocks_to_allocate",
+                "sha256": "dc6d2e64cc4cd8cbb3f4bd77d2d035038658d75b6e52f9ace0cf637a4897f71f"
+              },
+              {
+                "file": "vllm/v1/core/kv_cache_manager.py",
+                "symbol": "KVCacheManager.allocate_slots",
+                "sha256": "02c71da26bbac81629248ee42b0a71bd2db817d339894d647d2ff6b66fd5ad19"
+              },
+              {
+                "file": "vllm/v1/core/sched/scheduler.py",
+                "symbol": "Scheduler.schedule selected running-token arithmetic statements",
+                "sha256": "f34fce1c48a5ff73587ee0c7bd785df333644fc05fa461008cf71598ffe57da1"
+              }
+            ]
+          },
+          "upstream_collection": {
+            "status": "failed before any tests execute",
+            "error": "ModuleNotFoundError: tblib at repository tests/conftest.py",
+            "command": "PYTHONPATH=REPO_ROOT python -m pytest -p no:cacheprovider REPO_ROOT/tests/v1/core/test_prefix_caching.py -k \"test_prefill and not hybrid\" --collect-only -q"
+          },
+          "visuals": {
+            "static_frames": [
+              "first frame 000",
+              "middle frame 005",
+              "last frame 008"
+            ],
+            "static_status": "Rendered with existing Sharp and visually inspected: readable, no overlap/clipping identified.",
+            "browser_status": "not verified: browser security policy rejected local file URL; no workaround attempted.",
+            "packaging_status": "HTML plus asset directory structurally checked after relocation; all five local links resolve and player has inline dependencies/static details."
+          }
+        },
+        "doc": "kv-cache.md"
+      }
+    },
+    {
+      "doc": "scheduler.md",
+      "facts": {
+        "entry_points": [
+          "EngineCore.step"
+        ],
+        "components": [],
+        "steps": [
+          {
+            "id": "sched.A1",
+            "name": "Budget uncomputed suffix",
+            "input": {
+              "known": 35,
+              "computed": 0,
+              "token_budget": 16,
+              "input_budget": 16
+            },
+            "output": {
+              "cold_scheduled": [
+                16,
+                16,
+                3,
+                1,
+                1
+              ],
+              "warm_scheduled": [
+                3,
+                1,
+                1
+              ]
+            },
+            "caller": "EngineCore.step",
+            "owner": "Scheduler",
+            "condition": "No speculation/placeholders/encoder; chunking enabled; thresholds disabled",
+            "code": [
+              {
+                "file": "vllm/v1/core/sched/scheduler.py",
+                "symbol": "Scheduler.schedule"
+              }
+            ],
+            "tests": [
+              {
+                "command": "python tests/source_contracts.py REPO_ROOT",
+                "status": "pass",
+                "boundary": "Four original arithmetic AST statements, not complete schedule"
+              },
+              {
+                "target": "tests/v1/core/test_scheduler.py::test_schedule_concurrent_partial_requests",
+                "status": "not run (needs deps: tblib, vLLM runtime)"
+              }
+            ],
+            "gap": "Full scheduler toy lifecycle not executed"
+          },
+          {
+            "id": "sched.A2",
+            "name": "Advance scheduling boundary then append output",
+            "input": {
+              "computed": 32,
+              "scheduled": 3,
+              "known": 35
+            },
+            "output": {
+              "after_schedule_computed": 35,
+              "after_sample_known": 36
+            },
+            "caller": "Scheduler.schedule and EngineCore.step",
+            "owner": "Scheduler/Request",
+            "condition": "Synchronous completed iteration; no stale outputs or rejections",
+            "code": [
+              {
+                "file": "vllm/v1/core/sched/scheduler.py",
+                "symbol": "Scheduler._update_after_schedule"
+              },
+              {
+                "file": "vllm/v1/request.py",
+                "symbol": "Request.append_output_token_ids"
+              },
+              {
+                "file": "vllm/v1/engine/core.py",
+                "symbol": "EngineCore.step"
+              }
+            ],
+            "tests": [
+              {
+                "target": "tests/v1/core/test_scheduler.py::test_schedule_concurrent_partial_requests",
+                "status": "not run (needs deps: tblib, vLLM runtime)"
+              }
+            ],
+            "gap": "Source reviewed only; no full worker lifecycle execution"
+          }
+        ],
+        "terms": [],
+        "unverified": [
+          "No actual model/tokenizer/GPU execution; illustrated outputs have no measured logits or text."
+        ],
+        "off_golden_path": [
+          "Token IDs are constructed; no tokenizer or model output was measured.",
+          "Dense decoder-only, one full-attention cache group; hash and physical block sizes equal.",
+          "Warm cache is a completed prior request, not an in-flight producer.",
+          "Synchronous sequential steps; no eviction, connectors, encoder input, speculative tokens or fine-grained hits.",
+          "Toy pool counts model block metadata, not bytes or a measured GPU capacity."
+        ],
+        "shapes": [],
+        "surprises": [
+          "Scheduler computed count advances before execution completes.",
+          "Prefix hit tokens cost no new compute budget but idle hit blocks consume free capacity.",
+          "Hash index registration is not a KV readiness guarantee."
+        ],
+        "doc": "scheduler.md"
+      }
+    }
+  ],
+  "visuals": [
+    {
+      "id": "scheduler-cache-trace",
+      "question": "What changes when 32 prompt tokens already have ready KV?",
+      "doc": "kv-cache.md",
+      "takeaway": "Reused tokens reduce compute, not the total logical KV slots; metadata registration precedes execution.",
+      "kind": "standalone HTML trace with SVG keyframes",
+      "assets": [
+        "assets/cache-trace.json",
+        "assets/cache-player.html",
+        "assets/cache-frames/"
+      ],
+      "step_ids": [
+        "sched.A1",
+        "sched.A2",
+        "kv.A1",
+        "kv.A2",
+        "kv.A3"
+      ],
+      "source_symbols": [
+        "Scheduler.schedule",
+        "Scheduler._update_after_schedule",
+        "KVCacheManager.get_computed_blocks",
+        "KVCacheManager.allocate_slots",
+        "FullAttentionManager.find_longest_cache_hit"
+      ],
+      "assumptions": [
+        "Token IDs are constructed; no tokenizer or model output was measured.",
+        "Dense decoder-only, one full-attention cache group; hash and physical block sizes equal.",
+        "Warm cache is a completed prior request, not an in-flight producer.",
+        "Synchronous sequential steps; no eviction, connectors, encoder input, speculative tokens or fine-grained hits.",
+        "Toy pool counts model block metadata, not bytes or a measured GPU capacity."
+      ],
+      "evidence_status": "illustrative",
+      "verification": {
+        "static_frames": [
+          "first frame 000",
+          "middle frame 005",
+          "last frame 008"
+        ],
+        "static_status": "Rendered with existing Sharp and visually inspected: readable, no overlap/clipping identified.",
+        "browser_status": "not verified: browser security policy rejected local file URL; no workaround attempted.",
+        "packaging_status": "HTML plus asset directory structurally checked after relocation; all five local links resolve and player has inline dependencies/static details."
+      }
+    }
+  ]
+}

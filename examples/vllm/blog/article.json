@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "title": "Why a vLLM prefix hit saves tokens but still takes KV blocks",
+  "question": "How do a V1 token budget and KV ownership differ when one dense-model request hits its prefix cache?",
+  "audience": "Python engineer familiar with autoregressive decoding, new to vLLM",
+  "scope": "One synchronous single-GPU decoder-only request; equal hash and physical block sizes; prefill and two decode inputs; no model execution",
+  "source": {
+    "url": "https://github.com/vllm-project/vllm",
+    "commit": "d29f7f5c9294be8e489dac34d45a939b95a06336"
+  },
+  "assumptions": [
+    "Token IDs are constructed; no tokenizer or model output was measured.",
+    "Dense decoder-only, one full-attention cache group; hash and physical block sizes equal.",
+    "Warm cache is a completed prior request, not an in-flight producer.",
+    "Synchronous sequential steps; no eviction, connectors, encoder input, speculative tokens or fine-grained hits.",
+    "Toy pool counts model block metadata, not bytes or a measured GPU capacity."
+  ],
+  "claims": [
+    {
+      "id": "budget",
+      "statement": "The selected no-draft running branch catches computed positions up with known inputs, within compute and input budgets.",
+      "sources": [
+        {
+          "file": "vllm/v1/core/sched/scheduler.py",
+          "symbol": "Scheduler.schedule"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    },
+    {
+      "id": "lookup",
+      "statement": "The manager caps cache-hit length at known tokens minus one; single-group whole-block alignment gives 32 of 35 or 16 of 32.",
+      "sources": [
+        {
+          "file": "vllm/v1/core/kv_cache_manager.py",
+          "symbol": "KVCacheManager.get_computed_blocks"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    },
+    {
+      "id": "whole",
+      "statement": "One-group coordinator passes its physical block size as hit alignment.",
+      "sources": [
+        {
+          "file": "vllm/v1/core/kv_cache_coordinator.py",
+          "symbol": "UnitaryKVCacheCoordinator.find_longest_cache_hit"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    },
+    {
+      "id": "context",
+      "statement": "Full-attention lookup walks initial cached blocks and stops on a first miss.",
+      "sources": [
+        {
+          "file": "vllm/v1/core/single_type_kv_cache_manager.py",
+          "symbol": "FullAttentionManager.find_longest_cache_hit"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    },
+    {
+      "id": "capacity",
+      "statement": "Idle prefix hits add to admission capacity demand; allocation returns new blocks, not the full request table.",
+      "sources": [
+        {
+          "file": "vllm/v1/core/single_type_kv_cache_manager.py",
+          "symbol": "SingleTypeKVCacheManager.get_num_blocks_to_allocate"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    },
+    {
+      "id": "touch",
+      "statement": "Touching a cached idle block removes it from the free queue and increments references.",
+      "sources": [
+        {
+          "file": "vllm/v1/core/block_pool.py",
+          "symbol": "BlockPool.touch"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    },
+    {
+      "id": "registration",
+      "statement": "Allocation registers full finalized cache metadata before later executor computation.",
+      "sources": [
+        {
+          "file": "vllm/v1/core/kv_cache_manager.py",
+          "symbol": "KVCacheManager.allocate_slots"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    },
+    {
+      "id": "optimistic",
+      "statement": "Computed counters advance in scheduling and are accompanied by in-flight counters.",
+      "sources": [
+        {
+          "file": "vllm/v1/core/sched/scheduler.py",
+          "symbol": "Scheduler._update_after_schedule"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    },
+    {
+      "id": "synchronous",
+      "statement": "The selected EngineCore step waits for model output before processing that output.",
+      "sources": [
+        {
+          "file": "vllm/v1/engine/core.py",
+          "symbol": "EngineCore.step"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    },
+    {
+      "id": "known",
+      "statement": "Appending sampled output IDs extends the all-token ID list.",
+      "sources": [
+        {
+          "file": "vllm/v1/request.py",
+          "symbol": "Request.append_output_token_ids"
+        }
+      ],
+      "evidence_status": "source-reviewed"
+    }
+  ],
+  "figures": [
+    {
+      "id": "warm-ownership",
+      "asset": "assets/cache-frames/frame-005.svg",
+      "caption": "Two idle prefix blocks become owned; one new block stores three inputs.",
+      "claim_ids": [
+        "capacity",
+        "touch",
+        "budget"
+      ],
+      "evidence_status": "illustrative"
+    },
+    {
+      "id": "request-trace",
+      "asset": "assets/cache-player.html",
+      "caption": "Nine source-grounded states; presentation timing is illustrative.",
+      "claim_ids": [
+        "lookup",
+        "registration",
+        "optimistic",
+        "synchronous",
+        "known"
+      ],
+      "evidence_status": "illustrative"
+    },
+    {
+      "id": "last-decode",
+      "asset": "assets/cache-frames/frame-008.svg",
+      "caption": "After two decode inputs the last sampled ID has no computed KV yet.",
+      "claim_ids": [
+        "known",
+        "optimistic"
+      ],
+      "evidence_status": "illustrative"
+    },
+    {
+      "id": "cache-reuse-video",
+      "asset": "assets/cache-reuse.mp4",
+      "caption": "Illustrative metadata/execution/reuse lifecycle",
+      "claim_ids": [
+        "registration"
+      ],
+      "evidence_status": "illustrative"
+    },
+    {
+      "id": "cache-reuse-gif-preview",
+      "asset": "assets/cache-reuse.preview.gif",
+      "caption": "Illustrative cache lifecycle; reduced-resolution preview of the original MP4",
+      "claim_ids": [
+        "registration"
+      ],
+      "evidence_status": "illustrative",
+      "derived_from": "assets/cache-reuse.mp4"
+    }
+  ],
+  "uncertainties": [
+    "No actual model/tokenizer/GPU execution; illustrated outputs have no measured logits or text.",
+    "Full Scheduler.schedule and real free queue were not executed.",
+    "Actual hash construction, GPU KV readiness, cached/uncached logits and async branch combinations were not tested.",
+    "Browser policy rejected local HTML URL; Mermaid rendering, responsive layout, player controls and playback remain unverified."
+  ],
+  "checks": [
+    {
+      "command": "python source_contracts.py REPO_ROOT",
+      "outcome": "pass: eight grouped CPU contracts",
+      "boundary": "Original AST methods and four arithmetic statements; fake dependencies; no whole vLLM or GPU."
+    },
+    {
+      "command": "check_explain_doc.py explanation-folder --repo REPO_ROOT --mode deep",
+      "outcome": "3 docs checked: 0 errors, 0 warnings",
+      "boundary": "Structural checks, not behavioral proof."
+    },
+    {
+      "command": "Sharp SVG to PNG for frames 000,005,008; inspect images",
+      "outcome": "pass: readable first/middle/last static frames",
+      "boundary": "Static image inspection only; no browser controls."
+    },
+    {
+      "command": "Browser open local article/explanation HTML",
+      "outcome": "not run: local explanation HTML URL rejected by browser security policy",
+      "boundary": "No protocol/tool workaround attempted."
+    },
+    {
+      "command": "render_manim.py using Manim0.22.0, Cairo, LaTeX and FFmpeg",
+      "outcome": "pass",
+      "boundary": "Original CPU scenes rendered; FFprobe confirms H264; representative frames inspected; browser playback unverified"
+    },
+    {
+      "command": "Parent selected-source semantic review",
+      "outcome": "pass",
+      "boundary": "Reviewed loader/head/weight/update order for nanoGPT, and cap/free capacity/hash registration/computed counter/EngineCore order for vLLM; not exhaustive"
+    },
+    {
+      "command": "FFmpeg: fps=10, scale=720:-1, palettegen/paletteuse; FFprobe count_frames",
+      "outcome": "pass",
+      "boundary": "Reduced-resolution GIFs derived from the existing MP4s; frame counts/durations match; representative first/middle/final frames visually inspected"
+    },
+    {
+      "command": "POST /markdown with mode=gfm and repository context",
+      "outcome": "pass",
+      "boundary": "GitHub renderer retains 1 GIF image, 11 SVG images and 2 MP4 links; iframe/video tags absent; this is not browser playback or an interactive control test"
+    }
+  ]
+}

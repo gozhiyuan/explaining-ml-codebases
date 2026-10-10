@@ -1,0 +1,12 @@
+{
+  "template": "token-flow",
+  "title": "nanoGPT: one tiny forward pass",
+  "note": "Shapes from the tiny CPU fixture; transformations show data flow",
+  "stages": [
+    {"label": "Token IDs", "shape": "int64 [2, 4]", "detail": "X = [[7, 0, 1, 2], [5, 6, 7, 0]]"},
+    {"label": "Token + position embeddings", "shape": "float32 [2, 4, 8]", "detail": "Lookup vectors, add position vectors"},
+    {"label": "One causal Transformer block", "shape": "float32 [2, 4, 8]", "detail": "Pre-norm attention and MLP residuals"},
+    {"label": "Vocabulary logits", "shape": "float32 [2, 4, 8]", "detail": "Targets supplied: compute all positions"},
+    {"label": "Cross-entropy loss", "shape": "float32 scalar", "detail": "Same fixture loss before update: 2.056858"}
+  ]
+}

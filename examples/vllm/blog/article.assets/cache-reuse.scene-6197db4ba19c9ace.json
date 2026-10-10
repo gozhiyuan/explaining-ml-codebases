@@ -1,0 +1,17 @@
+{
+  "template": "cache-reuse",
+  "title": "Prefix cache: metadata, execution, reuse",
+  "note": "Conceptual sequential lifecycle; hash labels are illustrative",
+  "blocks": [
+    {
+      "tokens": "tokens 0..15",
+      "hash": "h0 = H(root, block0)",
+      "page": "page 4"
+    },
+    {
+      "tokens": "tokens 16..31",
+      "hash": "h1 = H(h0, block1)",
+      "page": "page 7"
+    }
+  ]
+}

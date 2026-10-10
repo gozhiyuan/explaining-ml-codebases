@@ -1,0 +1,122 @@
+{
+  "title": "One tiny nanoGPT CPU update",
+  "description": "Measured fixture states. Presentation durations are illustrative, not benchmark data. No CPU/GPU overlap.",
+  "evidence_status": "measured",
+  "frames": [
+    {
+      "title": "Two sampled windows",
+      "caption": "Fixture stream produces measured shifted labels.",
+      "duration": 3,
+      "panels": [
+        {
+          "label": "Inputs X, int64 CPU [2,4]",
+          "tone": "blue",
+          "items": [
+            "row 0: [7,0,1,2]",
+            "row 1: [5,6,7,0]"
+          ]
+        },
+        {
+          "label": "Targets Y, int64 CPU [2,4]",
+          "tone": "green",
+          "items": [
+            "row 0: [0,1,2,3]",
+            "row 1: [6,7,0,1]"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Forward creates a scalar loss",
+      "caption": "Eight target errors average into one loss. Parameters have not changed.",
+      "duration": 3,
+      "panels": [
+        {
+          "label": "Model output",
+          "tone": "blue",
+          "items": [
+            "logits float32 CPU [2,4,8]",
+            "loss: 2.056858 nats per target"
+          ]
+        },
+        {
+          "label": "Parameter state",
+          "tone": "gray",
+          "items": [
+            "888 scalar parameters",
+            "unchanged by forward"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Backward writes gradients",
+      "caption": "Backward differentiates the current graph. Parameters have not changed.",
+      "duration": 3,
+      "panels": [
+        {
+          "label": "Gradients",
+          "tone": "purple",
+          "items": [
+            "all parameter gradients finite",
+            "total norm before clipping: 1.218671"
+          ]
+        },
+        {
+          "label": "Shared token/head weight",
+          "tone": "blue",
+          "items": [
+            "one Parameter, two uses",
+            "both paths contribute gradients"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Clipping precedes AdamW",
+      "caption": "The total norm bound is one. Clipping changes gradients, not parameters.",
+      "duration": 3,
+      "panels": [
+        {
+          "label": "Gradient state",
+          "tone": "purple",
+          "items": [
+            "norm after clipping: 0.999999",
+            "clip bound: 1.0"
+          ]
+        },
+        {
+          "label": "AdamW settings",
+          "tone": "amber",
+          "items": [
+            "LR 0.001, betas (0.9,0.95)",
+            "matrix decay 0.1, vector decay 0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Weights changed, gradients cleared",
+      "caption": "A same-batch evaluation observes a smaller loss. This is one update, not a convergence result.",
+      "duration": 3,
+      "panels": [
+        {
+          "label": "Measured update",
+          "tone": "green",
+          "items": [
+            "max token-weight change: 0.001004860",
+            "same-batch loss after: 2.044125"
+          ]
+        },
+        {
+          "label": "After zero_grad",
+          "tone": "gray",
+          "items": [
+            "all parameter gradients: None",
+            "ready for another backward"
+          ]
+        }
+      ]
+    }
+  ]
+}

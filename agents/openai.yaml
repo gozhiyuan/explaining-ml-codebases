@@ -1,0 +1,4 @@
+interface:
+  display_name: "Explain ML Codebases"
+  short_description: "Trace ML source into checked docs and purposeful visuals"
+  default_prompt: "Use $explaining-ml-codebases to explain this repository from source with a running example, verified claims, figures and optional HTML."

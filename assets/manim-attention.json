@@ -1,0 +1,9 @@
+{
+  "template": "attention",
+  "title": "Causal attention, with actual tiny numbers",
+  "note": "Illustrative Q/K/V; these are not measured model activations",
+  "causal": true,
+  "q": [[1,0],[0,1],[1,1]],
+  "k": [[1,0],[0,1],[1,1]],
+  "v": [[1,0],[0,2],[3,1]]
+}

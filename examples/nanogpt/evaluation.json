@@ -1,0 +1,182 @@
+{
+  "source": {
+    "repository": "https://github.com/karpathy/nanoGPT",
+    "commit": "3adf61e154c3fe3fca428ad6bc3818b27a3b8291",
+    "tracked_and_ignored_status": "clean after validation rerun"
+  },
+  "deliverables": [
+    "index.md",
+    "train.md",
+    "model.md",
+    "evidence.json",
+    "explain.html",
+    "explain.assets/",
+    "assets/measurement.json",
+    "assets/windows.svg",
+    "assets/attention.svg",
+    "tests/validate_step.py",
+    "blog/article.md",
+    "blog/article.json",
+    "blog/article.html",
+    "blog/article.assets/",
+    "blog/assets/update-trace.json",
+    "blog/assets/update-player.html",
+    "blog/assets/update-frames/"
+  ],
+  "core": {
+    "scope": "One tiny CPU update, deep Markdown and HTML; no pretrained weights, GPU or data downloads",
+    "scanner": {
+      "initial": "pass: small, 1220 Python LOC, 15 Python files, 2 notebooks, zero test files; missed Python configs",
+      "final": "pass: finds seven config/*.py files after helper repair",
+      "records": [
+        ".work/scan.md",
+        ".work/scan.json",
+        ".work/scan-final.md"
+      ]
+    },
+    "validation": {
+      "status": "pass",
+      "assertion_groups": 13,
+      "actual_command": "TOOL_PYTHON -B tests/validate_step.py --repo ../repos/nanogpt --output .work/measurement-repeat.json",
+      "working_directory": "explanation artifact root",
+      "environment": {
+        "python": "3.12.5",
+        "torch": "2.14.1",
+        "numpy": "2.5.3",
+        "platform": "Darwin",
+        "machine": "arm64",
+        "device": "cpu",
+        "threads": 1
+      },
+      "result": {
+        "loss_before": 2.0568580627441406,
+        "loss_after": 2.0441248416900635,
+        "parameters": 888,
+        "grad_norm_before": 1.218671441078186,
+        "grad_norm_after": 0.9999992847442627,
+        "repeat_identical": true
+      },
+      "record": ".work/validation-repeat.log",
+      "boundary": "Original model imported read-only; get_batch and get_lr extracted by AST; full train.py process not executed"
+    },
+    "doc_checker": {
+      "status": "pass",
+      "docs": 3,
+      "errors": 0,
+      "warnings": 0,
+      "command": "python \"$EXPLAIN_SKILL/scripts/check_explain_doc.py\" . --repo \"$NANO_REPO\" --mode deep --must-cover .work/must-cover.txt",
+      "record": ".work/check-final.log"
+    },
+    "evidence_collector": {
+      "status": "pass",
+      "subsystems": 2,
+      "steps": 6,
+      "record": ".work/collect.log"
+    },
+    "html_renderer": {
+      "status": "pass",
+      "docs": 3,
+      "copied_assets": 4,
+      "warnings": 0,
+      "record": ".work/render-final.log"
+    }
+  },
+  "companion": {
+    "reader_question": "How do two windows become eight predictions and one weight update?",
+    "behavior": "Retained actual fixture, measured numbers, source commit, uncertainties and test gaps. Reframed reference docs into connected developer prose with short decision-focused excerpts.",
+    "checker": {
+      "status": "pass",
+      "errors": 0,
+      "claim_references": 6,
+      "command": "python \"$BLOG_SKILL/scripts/check_article.py\" blog/article.md --manifest blog/article.json --repo \"$NANO_REPO\" --evidence evidence.json",
+      "record": ".work/article-check-final.log"
+    },
+    "renderer": {
+      "status": "pass",
+      "docs": 1,
+      "copied_assets": 5,
+      "warnings": 0,
+      "command": "python \"$BLOG_SKILL/scripts/render_article.py\" blog/article.md -o blog/article.html --media-mode bundle",
+      "record": ".work/article-render-final.log"
+    },
+    "trace": {
+      "generated": true,
+      "states": 5,
+      "first_middle_last_static_inspection": "pass",
+      "control_playback": "not verified"
+    }
+  },
+  "source_claims_checked": [
+    "get_batch exclusive random upper bound and one-token shift",
+    "character IDs from sorted unique characters; 90/10 split; uint16 storage; meta.pkl fields",
+    "GPTConfig defaults versus train.py overrides",
+    "token/position embedding and weight tying",
+    "pre-norm residual attention/MLP and 4D expansion",
+    "causal SDPA API selector, not CUDA detector",
+    "all-position training logits and final-position inference logits",
+    "cross entropy flattening and ignore_index=-1",
+    "dimensional weight-decay grouping and CPU non-fused optimizer",
+    "warmup (it+1)/(warmup+1) and cosine LR branch",
+    "source forward/prefetch/backward/clip/step/clear order",
+    "initial evaluation and post-increment > max_iters termination; checkpoint dictionary fields"
+  ],
+  "visual_checks": {
+    "svg_desktop": "pass: two worked figures plus three trace keyframes inspected through Quick Look thumbnails",
+    "mobile": "not verified",
+    "browser": "not verified: CUA file URL policy rejected requested page; no alternative protocol or browser tool attempted",
+    "moved_export": "pass: structural links after copying HTML and its asset folder; four core and five article asset references resolve",
+    "record": ".work/export-check.json",
+    "cdn": "Docs/article library rendering still requires CDN network access; trace player standalone"
+  },
+  "skill_issues": [
+    {
+      "issue": "scanner initially missed config/*.py",
+      "status": "fixed by parent; verified on rerun"
+    },
+    {
+      "issue": "HTML bundle left nested assets/measurement.json unbundled",
+      "status": "fixed by parent; four core copied assets now include JSON; warning gone"
+    },
+    {
+      "issue": "article checker rejected file-only module-level call-order source",
+      "status": "fixed by parent; explicit symbol <module> passes"
+    },
+    {
+      "issue": "doc checker treated backticked skill script filenames as repo references",
+      "status": "worked around by removing code spans from helper names; no helper repair requested"
+    }
+  ],
+  "author_corrections": [
+    "Mermaid participant Loop was keyword; renamed Runner",
+    "Initial doc checker ran before evidence.json existed; collected evidence then rechecked",
+    "First import wrote ignored bytecode in checkout. Removed exactly generated bytecode and empty directory, enabled sys.dont_write_bytecode; final status clean",
+    "Export verifier initially looked for wrong payload key, then failed internal doc-name links. Corrected to md payload and runtime doc navigation; actual asset counts now checked"
+  ],
+  "test_gaps": [
+    "full train.py execution and evaluation RNG/cadence",
+    "validation split and exhaustive offset boundaries",
+    "text preparation and real tokenizer IDs",
+    "manual attention path and nonzero dropout",
+    "ignored targets and all-ignored batch",
+    "gradient accumulation, scaler, DDP, compilation",
+    "checkpoint/resume",
+    "generalization and long training convergence"
+  ],
+  "limits": [
+    "No fresh reviewer agent because parent prohibited further delegation; claims self-reviewed against original source",
+    "No timings, GPU kernel results, benchmark or convergence claims",
+    "HTML, mobile layout and interactive controls not browser-inspected",
+    "No site build or publication requested"
+  ],
+  "work_retention": "Evidence collection passed. .work retained for evaluation logs, source-reviewed facts, and companion reuse.",
+  "parent_enrichment": {
+    "source_review": "Selected claims manually checked against pinned implementation; not exhaustive",
+    "animation_templates": [
+      "token-flow",
+      "attention"
+    ],
+    "site_adaptation": "Jekyll profile staged and built in a scratch copy of the actual theme",
+    "evidence_mapping": "Facts doc names validated and corrected where needed",
+    "boundary": "Initial agent chose SVG/stepper; parent added original Manim examples to exercise the optional backend. HTML controls/mobile/playback remain unverified."
+  }
+}

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>One tiny nanoGPT CPU update</title><style>
+*{box-sizing:border-box}body{margin:0;padding:16px;font:16px/1.5 Arial,Helvetica,sans-serif;color:#172b45;background:#fff}
+h1{font-size:22px;margin:0 0 8px}p{margin:8px 0;color:#526174}.scene{width:100%;max-width:960px;margin:auto}.scene svg{display:block;width:100%;height:auto}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px auto;max-width:960px}
+button{padding:8px 12px;border:1px solid #bac7d5;border-radius:6px;background:#f4f7fb;color:#172b45;font:inherit;cursor:pointer}button:disabled{opacity:.45}
+input{flex:1;min-width:90px}details{max-width:960px;margin:auto}summary{cursor:pointer}
+details svg{display:block;width:100%;height:auto}.mobile-hint{display:none}
+@media(max-width:600px){body{padding:8px}.scene{overflow-x:auto}.scene svg{min-width:700px}h1{font-size:18px}.mobile-hint{display:block;font-size:14px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style></head><body><h1>One tiny nanoGPT CPU update</h1><p>Measured fixture states. Presentation durations are illustrative, not benchmark data. No CPU/GPU overlap.</p>
+<p class="mobile-hint">Scroll the figure horizontally to see all panels, or expand “Read all steps” below.</p>
+<div class="scene" id="scene" tabindex="0" aria-label="State figure; scroll horizontally on small screens"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 454" role="img" aria-label="Two sampled windows">
+<title>Two sampled windows</title>
+<desc>Fixture stream produces measured shifted labels.</desc>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}</style>
+<rect width="960" height="429" fill="#fff"/>
+<text x="32" y="35" font-size="15" fill="#526174">STEP 1 / 5 · measured state · illustrative timing</text>
+<text x="32" y="78" font-size="28" font-weight="700">Two sampled windows</text>
+<rect x="32.0" y="134" width="438.0" height="190" rx="14" fill="#eaf2ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="52.0" y="168" class="label">Inputs X, int64 CPU [2,4]</text>
+<text x="52.0" y="208" class="body">row 0: [7,0,1,2]</text>
+<text x="52.0" y="236" class="body">row 1: [5,6,7,0]</text>
+<rect x="490.0" y="134" width="438.0" height="190" rx="14" fill="#e8f6ef" stroke="#168052" stroke-width="1.5"/>
+<text x="510.0" y="168" class="label">Targets Y, int64 CPU [2,4]</text>
+<text x="510.0" y="208" class="body">row 0: [0,1,2,3]</text>
+<text x="510.0" y="236" class="body">row 1: [6,7,0,1]</text>
+<text x="32" y="360" class="body">Fixture stream produces measured shifted labels.</text>
+</svg></div>
+<div class="controls"><button id="prev" aria-label="Previous step">Previous</button><button id="play">Play</button><button id="next" aria-label="Next step">Next</button>
+<label for="step">Step</label><input id="step" type="range" min="0" max="4" value="0"><span id="status" aria-live="polite"></span></div>
+<details><summary>Read all steps</summary><h2>Two sampled windows</h2><p>Fixture stream produces measured shifted labels.</p><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 454" role="img" aria-label="Two sampled windows">
+<title>Two sampled windows</title>
+<desc>Fixture stream produces measured shifted labels.</desc>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}</style>
+<rect width="960" height="429" fill="#fff"/>
+<text x="32" y="35" font-size="15" fill="#526174">STEP 1 / 5 · measured state · illustrative timing</text>
+<text x="32" y="78" font-size="28" font-weight="700">Two sampled windows</text>
+<rect x="32.0" y="134" width="438.0" height="190" rx="14" fill="#eaf2ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="52.0" y="168" class="label">Inputs X, int64 CPU [2,4]</text>
+<text x="52.0" y="208" class="body">row 0: [7,0,1,2]</text>
+<text x="52.0" y="236" class="body">row 1: [5,6,7,0]</text>
+<rect x="490.0" y="134" width="438.0" height="190" rx="14" fill="#e8f6ef" stroke="#168052" stroke-width="1.5"/>
+<text x="510.0" y="168" class="label">Targets Y, int64 CPU [2,4]</text>
+<text x="510.0" y="208" class="body">row 0: [0,1,2,3]</text>
+<text x="510.0" y="236" class="body">row 1: [6,7,0,1]</text>
+<text x="32" y="360" class="body">Fixture stream produces measured shifted labels.</text>
+</svg><h2>Forward creates a scalar loss</h2><p>Eight target errors average into one loss. Parameters have not changed.</p><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 454" role="img" aria-label="Forward creates a scalar loss">
+<title>Forward creates a scalar loss</title>
+<desc>Eight target errors average into one loss. Parameters have not changed.</desc>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}</style>
+<rect width="960" height="429" fill="#fff"/>
+<text x="32" y="35" font-size="15" fill="#526174">STEP 2 / 5 · measured state · illustrative timing</text>
+<text x="32" y="78" font-size="28" font-weight="700">Forward creates a scalar loss</text>
+<rect x="32.0" y="134" width="438.0" height="190" rx="14" fill="#eaf2ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="52.0" y="168" class="label">Model output</text>
+<text x="52.0" y="208" class="body">logits float32 CPU [2,4,8]</text>
+<text x="52.0" y="236" class="body">loss: 2.056858 nats per target</text>
+<rect x="490.0" y="134" width="438.0" height="190" rx="14" fill="#f0f3f7" stroke="#526174" stroke-width="1.5"/>
+<text x="510.0" y="168" class="label">Parameter state</text>
+<text x="510.0" y="208" class="body">888 scalar parameters</text>
+<text x="510.0" y="236" class="body">unchanged by forward</text>
+<text x="32" y="360" class="body">Eight target errors average into one loss. Parameters have not changed.</text>
+</svg><h2>Backward writes gradients</h2><p>Backward differentiates the current graph. Parameters have not changed.</p><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 454" role="img" aria-label="Backward writes gradients">
+<title>Backward writes gradients</title>
+<desc>Backward differentiates the current graph. Parameters have not changed.</desc>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}</style>
+<rect width="960" height="429" fill="#fff"/>
+<text x="32" y="35" font-size="15" fill="#526174">STEP 3 / 5 · measured state · illustrative timing</text>
+<text x="32" y="78" font-size="28" font-weight="700">Backward writes gradients</text>
+<rect x="32.0" y="134" width="438.0" height="190" rx="14" fill="#f1ebff" stroke="#7541b8" stroke-width="1.5"/>
+<text x="52.0" y="168" class="label">Gradients</text>
+<text x="52.0" y="208" class="body">all parameter gradients finite</text>
+<text x="52.0" y="236" class="body">total norm before clipping:</text>
+<text x="52.0" y="264" class="body">1.218671</text>
+<rect x="490.0" y="134" width="438.0" height="190" rx="14" fill="#eaf2ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="510.0" y="168" class="label">Shared token/head weight</text>
+<text x="510.0" y="208" class="body">one Parameter, two uses</text>
+<text x="510.0" y="236" class="body">both paths contribute gradients</text>
+<text x="32" y="360" class="body">Backward differentiates the current graph. Parameters have not changed.</text>
+</svg><h2>Clipping precedes AdamW</h2><p>The total norm bound is one. Clipping changes gradients, not parameters.</p><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 454" role="img" aria-label="Clipping precedes AdamW">
+<title>Clipping precedes AdamW</title>
+<desc>The total norm bound is one. Clipping changes gradients, not parameters.</desc>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}</style>
+<rect width="960" height="429" fill="#fff"/>
+<text x="32" y="35" font-size="15" fill="#526174">STEP 4 / 5 · measured state · illustrative timing</text>
+<text x="32" y="78" font-size="28" font-weight="700">Clipping precedes AdamW</text>
+<rect x="32.0" y="134" width="438.0" height="190" rx="14" fill="#f1ebff" stroke="#7541b8" stroke-width="1.5"/>
+<text x="52.0" y="168" class="label">Gradient state</text>
+<text x="52.0" y="208" class="body">norm after clipping: 0.999999</text>
+<text x="52.0" y="236" class="body">clip bound: 1.0</text>
+<rect x="490.0" y="134" width="438.0" height="190" rx="14" fill="#fff4d9" stroke="#a66a08" stroke-width="1.5"/>
+<text x="510.0" y="168" class="label">AdamW settings</text>
+<text x="510.0" y="208" class="body">LR 0.001, betas (0.9,0.95)</text>
+<text x="510.0" y="236" class="body">matrix decay 0.1, vector decay 0.0</text>
+<text x="32" y="360" class="body">The total norm bound is one. Clipping changes gradients, not parameters.</text>
+</svg><h2>Weights changed, gradients cleared</h2><p>A same-batch evaluation observes a smaller loss. This is one update, not a convergence result.</p><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 454" role="img" aria-label="Weights changed, gradients cleared">
+<title>Weights changed, gradients cleared</title>
+<desc>A same-batch evaluation observes a smaller loss. This is one update, not a convergence result.</desc>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}</style>
+<rect width="960" height="454" fill="#fff"/>
+<text x="32" y="35" font-size="15" fill="#526174">STEP 5 / 5 · measured state · illustrative timing</text>
+<text x="32" y="78" font-size="28" font-weight="700">Weights changed, gradients cleared</text>
+<rect x="32.0" y="134" width="438.0" height="190" rx="14" fill="#e8f6ef" stroke="#168052" stroke-width="1.5"/>
+<text x="52.0" y="168" class="label">Measured update</text>
+<text x="52.0" y="208" class="body">max token-weight change:</text>
+<text x="52.0" y="236" class="body">0.001004860</text>
+<text x="52.0" y="264" class="body">same-batch loss after: 2.044125</text>
+<rect x="490.0" y="134" width="438.0" height="190" rx="14" fill="#f0f3f7" stroke="#526174" stroke-width="1.5"/>
+<text x="510.0" y="168" class="label">After zero_grad</text>
+<text x="510.0" y="208" class="body">all parameter gradients: None</text>
+<text x="510.0" y="236" class="body">ready for another backward</text>
+<text x="32" y="360" class="body">A same-batch evaluation observes a smaller loss. This is one update, not a</text>
+<text x="32" y="385" class="body">convergence result.</text>
+</svg></details>
+<script id="trace-data" type="application/json">{"frames": [{"svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 960 454\" role=\"img\" aria-label=\"Two sampled windows\">\n<title>Two sampled windows<\/title>\n<desc>Fixture stream produces measured shifted labels.<\/desc>\n<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}<\/style>\n<rect width=\"960\" height=\"429\" fill=\"#fff\"/>\n<text x=\"32\" y=\"35\" font-size=\"15\" fill=\"#526174\">STEP 1 / 5 · measured state · illustrative timing<\/text>\n<text x=\"32\" y=\"78\" font-size=\"28\" font-weight=\"700\">Two sampled windows<\/text>\n<rect x=\"32.0\" y=\"134\" width=\"438.0\" height=\"190\" rx=\"14\" fill=\"#eaf2ff\" stroke=\"#2563eb\" stroke-width=\"1.5\"/>\n<text x=\"52.0\" y=\"168\" class=\"label\">Inputs X, int64 CPU [2,4]<\/text>\n<text x=\"52.0\" y=\"208\" class=\"body\">row 0: [7,0,1,2]<\/text>\n<text x=\"52.0\" y=\"236\" class=\"body\">row 1: [5,6,7,0]<\/text>\n<rect x=\"490.0\" y=\"134\" width=\"438.0\" height=\"190\" rx=\"14\" fill=\"#e8f6ef\" stroke=\"#168052\" stroke-width=\"1.5\"/>\n<text x=\"510.0\" y=\"168\" class=\"label\">Targets Y, int64 CPU [2,4]<\/text>\n<text x=\"510.0\" y=\"208\" class=\"body\">row 0: [0,1,2,3]<\/text>\n<text x=\"510.0\" y=\"236\" class=\"body\">row 1: [6,7,0,1]<\/text>\n<text x=\"32\" y=\"360\" class=\"body\">Fixture stream produces measured shifted labels.<\/text>\n<\/svg>", "duration": 3}, {"svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 960 454\" role=\"img\" aria-label=\"Forward creates a scalar loss\">\n<title>Forward creates a scalar loss<\/title>\n<desc>Eight target errors average into one loss. Parameters have not changed.<\/desc>\n<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}<\/style>\n<rect width=\"960\" height=\"429\" fill=\"#fff\"/>\n<text x=\"32\" y=\"35\" font-size=\"15\" fill=\"#526174\">STEP 2 / 5 · measured state · illustrative timing<\/text>\n<text x=\"32\" y=\"78\" font-size=\"28\" font-weight=\"700\">Forward creates a scalar loss<\/text>\n<rect x=\"32.0\" y=\"134\" width=\"438.0\" height=\"190\" rx=\"14\" fill=\"#eaf2ff\" stroke=\"#2563eb\" stroke-width=\"1.5\"/>\n<text x=\"52.0\" y=\"168\" class=\"label\">Model output<\/text>\n<text x=\"52.0\" y=\"208\" class=\"body\">logits float32 CPU [2,4,8]<\/text>\n<text x=\"52.0\" y=\"236\" class=\"body\">loss: 2.056858 nats per target<\/text>\n<rect x=\"490.0\" y=\"134\" width=\"438.0\" height=\"190\" rx=\"14\" fill=\"#f0f3f7\" stroke=\"#526174\" stroke-width=\"1.5\"/>\n<text x=\"510.0\" y=\"168\" class=\"label\">Parameter state<\/text>\n<text x=\"510.0\" y=\"208\" class=\"body\">888 scalar parameters<\/text>\n<text x=\"510.0\" y=\"236\" class=\"body\">unchanged by forward<\/text>\n<text x=\"32\" y=\"360\" class=\"body\">Eight target errors average into one loss. Parameters have not changed.<\/text>\n<\/svg>", "duration": 3}, {"svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 960 454\" role=\"img\" aria-label=\"Backward writes gradients\">\n<title>Backward writes gradients<\/title>\n<desc>Backward differentiates the current graph. Parameters have not changed.<\/desc>\n<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}<\/style>\n<rect width=\"960\" height=\"429\" fill=\"#fff\"/>\n<text x=\"32\" y=\"35\" font-size=\"15\" fill=\"#526174\">STEP 3 / 5 · measured state · illustrative timing<\/text>\n<text x=\"32\" y=\"78\" font-size=\"28\" font-weight=\"700\">Backward writes gradients<\/text>\n<rect x=\"32.0\" y=\"134\" width=\"438.0\" height=\"190\" rx=\"14\" fill=\"#f1ebff\" stroke=\"#7541b8\" stroke-width=\"1.5\"/>\n<text x=\"52.0\" y=\"168\" class=\"label\">Gradients<\/text>\n<text x=\"52.0\" y=\"208\" class=\"body\">all parameter gradients finite<\/text>\n<text x=\"52.0\" y=\"236\" class=\"body\">total norm before clipping:<\/text>\n<text x=\"52.0\" y=\"264\" class=\"body\">1.218671<\/text>\n<rect x=\"490.0\" y=\"134\" width=\"438.0\" height=\"190\" rx=\"14\" fill=\"#eaf2ff\" stroke=\"#2563eb\" stroke-width=\"1.5\"/>\n<text x=\"510.0\" y=\"168\" class=\"label\">Shared token/head weight<\/text>\n<text x=\"510.0\" y=\"208\" class=\"body\">one Parameter, two uses<\/text>\n<text x=\"510.0\" y=\"236\" class=\"body\">both paths contribute gradients<\/text>\n<text x=\"32\" y=\"360\" class=\"body\">Backward differentiates the current graph. Parameters have not changed.<\/text>\n<\/svg>", "duration": 3}, {"svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 960 454\" role=\"img\" aria-label=\"Clipping precedes AdamW\">\n<title>Clipping precedes AdamW<\/title>\n<desc>The total norm bound is one. Clipping changes gradients, not parameters.<\/desc>\n<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}<\/style>\n<rect width=\"960\" height=\"429\" fill=\"#fff\"/>\n<text x=\"32\" y=\"35\" font-size=\"15\" fill=\"#526174\">STEP 4 / 5 · measured state · illustrative timing<\/text>\n<text x=\"32\" y=\"78\" font-size=\"28\" font-weight=\"700\">Clipping precedes AdamW<\/text>\n<rect x=\"32.0\" y=\"134\" width=\"438.0\" height=\"190\" rx=\"14\" fill=\"#f1ebff\" stroke=\"#7541b8\" stroke-width=\"1.5\"/>\n<text x=\"52.0\" y=\"168\" class=\"label\">Gradient state<\/text>\n<text x=\"52.0\" y=\"208\" class=\"body\">norm after clipping: 0.999999<\/text>\n<text x=\"52.0\" y=\"236\" class=\"body\">clip bound: 1.0<\/text>\n<rect x=\"490.0\" y=\"134\" width=\"438.0\" height=\"190\" rx=\"14\" fill=\"#fff4d9\" stroke=\"#a66a08\" stroke-width=\"1.5\"/>\n<text x=\"510.0\" y=\"168\" class=\"label\">AdamW settings<\/text>\n<text x=\"510.0\" y=\"208\" class=\"body\">LR 0.001, betas (0.9,0.95)<\/text>\n<text x=\"510.0\" y=\"236\" class=\"body\">matrix decay 0.1, vector decay 0.0<\/text>\n<text x=\"32\" y=\"360\" class=\"body\">The total norm bound is one. Clipping changes gradients, not parameters.<\/text>\n<\/svg>", "duration": 3}, {"svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 960 454\" role=\"img\" aria-label=\"Weights changed, gradients cleared\">\n<title>Weights changed, gradients cleared<\/title>\n<desc>A same-batch evaluation observes a smaller loss. This is one update, not a convergence result.<\/desc>\n<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172b45}.body{font-size:22px}.label{font-size:22px;font-weight:700}.token{font:20px monospace;text-anchor:middle}<\/style>\n<rect width=\"960\" height=\"454\" fill=\"#fff\"/>\n<text x=\"32\" y=\"35\" font-size=\"15\" fill=\"#526174\">STEP 5 / 5 · measured state · illustrative timing<\/text>\n<text x=\"32\" y=\"78\" font-size=\"28\" font-weight=\"700\">Weights changed, gradients cleared<\/text>\n<rect x=\"32.0\" y=\"134\" width=\"438.0\" height=\"190\" rx=\"14\" fill=\"#e8f6ef\" stroke=\"#168052\" stroke-width=\"1.5\"/>\n<text x=\"52.0\" y=\"168\" class=\"label\">Measured update<\/text>\n<text x=\"52.0\" y=\"208\" class=\"body\">max token-weight change:<\/text>\n<text x=\"52.0\" y=\"236\" class=\"body\">0.001004860<\/text>\n<text x=\"52.0\" y=\"264\" class=\"body\">same-batch loss after: 2.044125<\/text>\n<rect x=\"490.0\" y=\"134\" width=\"438.0\" height=\"190\" rx=\"14\" fill=\"#f0f3f7\" stroke=\"#526174\" stroke-width=\"1.5\"/>\n<text x=\"510.0\" y=\"168\" class=\"label\">After zero_grad<\/text>\n<text x=\"510.0\" y=\"208\" class=\"body\">all parameter gradients: None<\/text>\n<text x=\"510.0\" y=\"236\" class=\"body\">ready for another backward<\/text>\n<text x=\"32\" y=\"360\" class=\"body\">A same-batch evaluation observes a smaller loss. This is one update, not a<\/text>\n<text x=\"32\" y=\"385\" class=\"body\">convergence result.<\/text>\n<\/svg>", "duration": 3}], "height": 454}</script><script>
+(()=>{const data=JSON.parse(document.getElementById('trace-data').textContent), scene=document.getElementById('scene'),slider=document.getElementById('step'),play=document.getElementById('play');
+let index=0,timer=null;const duration=data.frames.reduce((s,f)=>s+f.duration,0);
+function stop(){clearTimeout(timer);timer=null;play.textContent='Play'}
+function show(i){index=Math.max(0,Math.min(data.frames.length-1,i));scene.innerHTML=data.frames[index].svg;slider.value=index;document.getElementById('status').textContent=`${index+1} / ${data.frames.length}`;document.getElementById('prev').disabled=index===0;document.getElementById('next').disabled=index===data.frames.length-1}
+function advance(){if(index===data.frames.length-1){stop();return}show(index+1);timer=setTimeout(advance,data.frames[index].duration*1000)}
+document.getElementById('prev').onclick=()=>{stop();show(index-1)};document.getElementById('next').onclick=()=>{stop();show(index+1)};slider.oninput=()=>{stop();show(Number(slider.value))};
+play.onclick=()=>{if(timer){stop();return}if(index===data.frames.length-1)show(0);play.textContent='Pause';timer=setTimeout(advance,data.frames[index].duration*1000)};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stop()});
+window.explainTrace={duration,frameCount:data.frames.length,height:data.height,seek(t){stop();let elapsed=0;for(let i=0;i<data.frames.length;i++){elapsed+=data.frames[i].duration;if(t<elapsed||i===data.frames.length-1){show(i);return i}}}};
+show(0);})();</script></body></html>

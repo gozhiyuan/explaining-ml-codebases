@@ -1,0 +1,37 @@
+{
+  "title": "Prefix reuse: hashes, computation, and a later lookup",
+  "description": "Illustrative cache model with block size 4. Hash labels are placeholders; metadata and eviction are omitted. Verify the target repository before adapting.",
+  "evidence_status": "illustrative",
+  "frames": [
+    {
+      "title": "A hash identifies a block; it does not compute KVs",
+      "duration": 3,
+      "caption": "Request A has two complete prefix blocks and an incomplete suffix. No reusable computed blocks exist yet.",
+      "panels": [
+        {"label": "First complete block", "tone": "amber", "tokens": [1, 2, 3, 4], "items": ["h1 = H(null, block 1)", "h1 is an illustrative label"]},
+        {"label": "Second complete block", "tone": "blue", "tokens": [5, 6, 7, 8], "items": ["h2 = H(h1, block 2)", "Depends on the first hash"]},
+        {"label": "Lookup before computation", "tone": "gray", "items": ["Suffix: [9, 10, 2]", "Ready cache: empty", "Reusable prefix: 0 tokens"]}
+      ]
+    },
+    {
+      "title": "The forward pass produces the cached KV tensors",
+      "duration": 3,
+      "caption": "This toy snapshot shows completed computation. Source-specific allocation, registration, and readiness bookkeeping are abstracted.",
+      "panels": [
+        {"label": "Request A", "tone": "amber", "items": ["Prefill computes its tokens", "Full prefix blocks are ready", "Suffix stays request-specific"]},
+        {"label": "Computed prefix", "tone": "green", "tokens": [1, 2, 3, 4, 5, 6, 7, 8], "items": ["h1 identifies KV page P", "h2 identifies KV page Q"]},
+        {"label": "Ready for reuse", "tone": "blue", "items": ["h1 -> page P", "h2 -> page Q", "Assume pages remain valid"]}
+      ]
+    },
+    {
+      "title": "Request B reuses the same computed prefix",
+      "duration": 3,
+      "caption": "The unchanged complete prefix hits both pages. This illustrative model processes only B's new suffix during prefill.",
+      "panels": [
+        {"label": "Request B lookup", "tone": "blue", "items": ["Same tokens -> h1, h2", "Both pages are still ready", "Reused prefix: 8 tokens"]},
+        {"label": "Reuse these pages", "tone": "green", "tokens": [1, 2, 3, 4, 5, 6, 7, 8], "items": ["Page P, then page Q", "No prefix recomputation"]},
+        {"label": "New work", "tone": "amber", "tokens": [12, 10, 2], "items": ["B's suffix is different", "Compute its new KVs"]}
+      ]
+    }
+  ]
+}
