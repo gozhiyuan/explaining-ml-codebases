@@ -169,18 +169,28 @@ python "$SKILL_DIR/scripts/render_trace.py" docs/explain/assets/cache-trace.json
   -o docs/explain/assets/cache-player.html --frames-dir docs/explain/assets/cache-frames
 ```
 
-Embed a static frame in Markdown, followed by the player in HTML:
+Embed static frames and a link in Markdown. When the same source also produces
+HTML, place raw HTML embeds inside an `explain-html-only` comment:
 
 ```markdown
 ![Cache state before KV computation](assets/cache-frames/frame-000.svg)
 
+<!-- explain-html-only
 <iframe src="assets/cache-player.html" title="Step through cache states"
         height="720" sandbox="allow-scripts" loading="lazy"></iframe>
+-->
 
 [Open the interactive explanation](assets/cache-player.html)
 ```
 
-For GitHub repository Markdown, the iframe is not an active player. Include
+GitHub hides the comment; `render_html.py`, the article renderer and the Jekyll
+adapter restore its HTML and package the referenced assets. Use pure HTML
+inside the comment; keep Markdown captions and links outside it. Apply the same
+wrapper to a video/figure embed in shared Markdown. Do not put a bare iframe
+in repository Markdown: GitHub escapes it and displays the tag as text.
+
+SVG keyframes are static on GitHub. The interactive SVG stepper runs in HTML.
+For GitHub repository Markdown, include
 enough static frames to explain the sequence, preferably in a collapsible
 gallery for long traces. Keep a poster and an explicit Markdown MP4 link
 outside `<video>` markup. Optional GIF previews show motion in repo Markdown;
@@ -243,7 +253,8 @@ model's hidden activations. Token-flow uses source-supported shapes; cache
 reuse separates hash metadata, reserved pages, completed KV and subsequent
 reuse. Adapt values and captions to the actual golden path. The renderer saves
 a final poster, numerical metadata, JSON and editable scene code beside MP4.
-Use `<video controls>` with the poster and a static fallback. Inspect keyframes
+Use `<video controls>` with the poster and a static fallback. In shared
+Markdown, wrap this HTML block in the comment described above. Inspect keyframes
 and actual playback when available; generation alone is not visual validation.
 
 ```html

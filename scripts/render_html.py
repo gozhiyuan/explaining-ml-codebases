@@ -52,6 +52,7 @@ LINK_RE = re.compile(r"\]\(([\w./-]+\.md)(?:#[^)]*)?\)")
 H1_RE = re.compile(r"^#\s+(.+)$", re.M)
 IMG_MD_RE = re.compile(r'!\[([^\]]*)\]\(\s*<?([^)\s>]+)>?(\s+"[^"]*")?\s*\)')
 MEDIA_TAG_RE = re.compile(r'<(?:img|video|audio|source|iframe|a)\b[^>]*>', re.I | re.S)
+HTML_ONLY_RE = re.compile(r'<!-- explain-html-only\s*\n([\s\S]*?)\n\s*-->')
 CODE_SPAN_RE = re.compile(r'(?<!`)(`+)(?!`)[\s\S]*?(?<!`)\1(?!`)')
 MEDIA_SUFFIXES = {'.svg', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.avif',
                   '.mp4', '.webm', '.ogg', '.mp3', '.wav', '.html', '.htm',
@@ -208,6 +209,8 @@ def localize(md: str, doc_dir: Path, ctx: dict) -> str:
         text = '\n'.join(prose)
         # Process whole prose blocks so multiline <video>/<iframe> tags work.
         def rewrite(chunk):
+            # GitHub hides this comment; the HTML reading view restores its markup.
+            chunk = HTML_ONLY_RE.sub(lambda m: m.group(1), chunk)
             chunk = IMG_MD_RE.sub(img_md, chunk)
             chunk = MEDIA_TAG_RE.sub(media_html, chunk)
             return LINK_MD_RE.sub(link, chunk)

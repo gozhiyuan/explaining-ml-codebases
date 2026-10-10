@@ -193,6 +193,8 @@ The states use the exact values above. Display durations are illustrative, not l
 
 ![Warm allocation: two idle prefix hits plus one suffix block](assets/cache-frames/frame-005.svg)
 
+<!-- explain-html-only
 <iframe src="assets/cache-player.html" title="Step through scheduler and cache state" height="720" sandbox="allow-scripts" loading="lazy"></iframe>
+-->
 
 [Open the standalone trace](assets/cache-player.html). The [trace JSON](assets/cache-trace.json) and SVG frames remain editable. Without JavaScript, the player exposes static states.

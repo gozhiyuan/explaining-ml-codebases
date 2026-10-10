@@ -77,7 +77,10 @@ tests and unverified browser checks explicitly.
 - For GitHub repository Markdown, retain static trace frames, video posters
   and explicit Markdown MP4 links outside HTML media tags. Optional GIF previews
   can show motion; collapse looping previews and omit them for static-only
-  requests. Iframe players run in local/hosted HTML, not GitHub's file view.
+  requests. SVG trace frames remain static on GitHub. Iframe players run in
+  local/hosted HTML. Wrap HTML-only embeds in `<!-- explain-html-only` comments
+  closed by `-->`, with the markup on separate lines; renderers restore them
+  for HTML/Jekyll. Bare iframe tags appear as escaped text on GitHub.
 - Use original scenes and illustrations. Borrow teaching principles, not
   another author's artwork, narration, branding or restricted-license code.
 

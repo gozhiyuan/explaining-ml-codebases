@@ -44,6 +44,10 @@ Actual execution boundaries:
 - Article and media exports structurally checked after relocation. Browser tool
   rejected local file URLs, so controls, Mermaid runtime, responsive layout and
   HTML/video playback remain unverified. No protocol/tool workaround was used.
+- GitHub Markdown API checks use `mode: gfm` with the repository context.
+  HTML-only comments hide embed markup while retaining static SVGs, GIF previews
+  and MP4 links. Generated HTML and Jekyll staging restore the embeds and assets;
+  these checks do not establish browser playback.
 - Jekyll staging/local build checks are recorded in `results.json`. They do not
   imply publication. The user's existing site is used only in a scratch copy.
 

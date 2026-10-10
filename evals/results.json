@@ -2,7 +2,7 @@
   "date": "2026-10-09",
   "unit_tests": {
     "status": "pass",
-    "count": 19,
+    "count": 21,
     "command": "python -m unittest discover -s tests -v"
   },
   "skills": {
@@ -91,13 +91,13 @@
   "browser": "File URL inspection rejected by tool policy; responsive page layout, controls, Mermaid runtime and media playback unverified. No alternative protocol/surface used.",
   "release": "MIT, portable installer and independently installable skill ZIP; no publication",
   "github_markdown": {
-    "status": "API rendering passed",
+    "status": "API GFM rendering passed",
     "gif_previews": 3,
     "static_trace_frames": {
       "nanogpt": 5,
       "vllm": 9
     },
     "mp4_files": "Existing 3 H264 1280x720 clips verified with FFprobe",
-    "boundary": "API retains images/links and removes active iframe/video tags. GIF first/middle/final frames inspected; repository browser playback and controls remain unverified."
+    "boundary": "GFM API retains SVG/GIF images and MP4 links. HTML-only comments hide iframe/video markup; restored embeds and packaged assets checked in generated HTML. GIF frames inspected; browser playback and controls remain unverified."
   }
 }

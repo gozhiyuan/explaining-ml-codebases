@@ -28,7 +28,8 @@ Selecting `math: katex` adds pinned KaTeX CDN loading; network access is require
 for math. Avoid adding it when the theme already renders math. Verify the
 renderer's `.post-content`/`.post` target exists in the chosen theme.
 MP4 uses normal HTML `<video controls playsinline preload="metadata" poster="…">`
-and an adjacent caption/static figure. Do not autoplay. Players must be
+and an adjacent caption/static figure. The adapter restores `explain-html-only`
+comment blocks used to hide embeds from GitHub's Markdown view. Do not autoplay. Players must be
 self-contained; external local dependencies are rejected. Provide static
 fallback figures for iframe content. Adapt local Markdown cross-links to
 verified site URLs or `{% post_url … %}` before staging: the adapter rejects

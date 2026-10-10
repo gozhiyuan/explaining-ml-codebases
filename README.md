@@ -139,7 +139,8 @@ or use chapters; video is optional, not an article quota.
 
 On GitHub, the example articles include static trace galleries, GIF previews
 and MP4 links. Clone the repo and open their `article.html` files for interactive
-players and video controls; GitHub's Markdown view does not run those embeds.
+players and video controls. SVG trace frames stay static on GitHub; GIF previews
+can animate. HTML-only embeds are hidden in the repository Markdown view.
 
 ## Dependencies stay optional
 

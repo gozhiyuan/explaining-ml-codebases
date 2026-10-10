@@ -1,6 +1,6 @@
 # Why a vLLM prefix hit saves tokens but still takes KV blocks
 
-> Reading on GitHub: iframe controls and repository-relative HTML video embeds are not active here. Use the static frames, animated GIF previews and MP4 links below. For the interactive version, clone the repo and open this folder's `article.html` with its adjacent `article.assets/` folder; open standalone players locally too.
+> Reading on GitHub: SVG trace frames are static. GIF previews can animate; interactive steppers and video controls run in HTML. Use the static frames, GIF previews and MP4 links below. For the interactive version, clone the repo and open this folder's `article.html` with its adjacent `article.assets/` folder; open standalone players locally too.
 
 
 A 35-token prompt can cost either 35 new token computations or just three. Both runs still need KV storage covering the same 35 input positions. The distinction is easy to miss if “cache hit” means both “skip work” and “use no memory” in your mental model.
@@ -212,7 +212,9 @@ Trace stops here, before request finish. Blocks remain owned by R.
 
 </details>
 
+<!-- explain-html-only
 <iframe src="assets/cache-player.html" title="Cold and warm scheduler trace" height="720" sandbox="allow-scripts" loading="lazy"></iframe>
+-->
 
 [Open the standalone state player](assets/cache-player.html). It has nine illustrative states, no autoplay and static fallbacks. Durations control presentation, not a measured latency. The editable [trace specification](assets/cache-trace.json) retains all example values.
 
@@ -254,6 +256,7 @@ GIF timings are illustrative, as in the original clip. Use the MP4 for the full-
 
 </details>
 
+<!-- explain-html-only
 <figure>
   <video controls playsinline preload="metadata" poster="assets/cache-reuse.poster.png">
     <source src="assets/cache-reuse.mp4" type="video/mp4">
@@ -261,6 +264,7 @@ GIF timings are illustrative, as in the original clip. Use the MP4 for the full-
   </video>
   <figcaption>Original conceptual Manim scene: chained hash metadata, reserved pages, execution completion, then reuse by a later request. Hash labels and page IDs are illustrative, separate from the numbered trace above.</figcaption>
 </figure>
+-->
 
 The [editable scene specification](assets/cache-reuse.scene.json) and [original scene code](assets/cache-reuse.scene.py) and [reproducible source bundle](assets/cache-reuse.sources.zip) preserve this simplified model. The nine-state player above carries the precise budget and block counts. The MP4's timing is illustrative; it does not model concurrency, measure latency or establish real GPU readiness.
 

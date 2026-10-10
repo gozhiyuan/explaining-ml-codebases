@@ -97,6 +97,22 @@ print("{{ dangerous_fenced }}")
             self.run_script(BLOG/'scripts/format_jekyll.py',self.article,'--profile',BLOG/'profiles/jekyll.json','--slug','failure','--date','2026-10-09','--out',stage,success=False)
             self.assertFalse(stage.exists())
 
+    def test_jekyll_restores_html_only_player_and_packages_it(self):
+        (self.root/'player.html').write_text('<html><button>Next</button></html>')
+        self.article.write_text('# Trace\n\n<!-- explain-html-only\n'
+                               '<iframe src="player.html" title="Trace"></iframe>\n-->\n')
+        stage=self.root/'stage'
+        self.run_script(BLOG/'scripts/format_jekyll.py',self.article,
+                        '--profile',BLOG/'profiles/jekyll.json','--slug','trace',
+                        '--date','2026-10-09','--out',stage)
+        post=(stage/'_posts/2026-10-09-trace.md').read_text()
+        self.assertNotIn('explain-html-only',post)
+        self.assertIn('<iframe src="{{ ',post)
+        manifest=json.loads((stage/'asset-manifest.json').read_text())
+        self.assertEqual(len(manifest['assets']),1)
+        for path in manifest['assets']:
+            self.assertEqual((stage/path.lstrip('/')).read_text(),'<html><button>Next</button></html>')
+
     def test_standalone_installed_blog_and_release_archive(self):
         dest=self.root/'installed'
         self.run_script(ROOT/'scripts/install_skills.py','--dest',dest,'--skill','blog')

@@ -89,6 +89,24 @@ class Outputs(unittest.TestCase):
         self.assertIn('data:application/json;base64,', md)
         self.assertFalse(out.with_suffix('.assets').exists())
 
+    def test_html_only_player_restored_and_portable_without_rewriting_code(self):
+        self.media_fixture()
+        block = '<!-- explain-html-only\n<iframe src="assets/player.html" title="Trace"></iframe>\n-->'
+        source = '# Shared Markdown\n\n' + block + '\n\n```html\n' + block + '\n```\n'
+        (self.docs / 'index.md').write_text(source)
+        out = self.root / 'reading.html'
+        result = self.run_script('render_html.py', self.docs, '-o', out)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        rendered = self.payload(out)[0]['md']
+        prose, code = rendered.split('```html', 1)
+        self.assertNotIn('explain-html-only', prose)
+        self.assertIn('<iframe src="reading.assets/player-', prose)
+        self.assertIn(block, code)
+        packaged = list(out.with_suffix('.assets').glob('player-*.html'))
+        self.assertEqual(len(packaged), 1)
+        self.assertEqual(packaged[0].read_text(), (self.docs / 'assets/player.html').read_text())
+        self.assertEqual((self.docs / 'index.md').read_text(), source)
+
     def test_bundle_handles_same_named_different_assets(self):
         (self.docs / 'a').mkdir(); (self.docs / 'b').mkdir()
         (self.docs / 'a' / 'same.svg').write_text('<svg>A</svg>')

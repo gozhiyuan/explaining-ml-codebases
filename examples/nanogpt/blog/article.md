@@ -1,6 +1,6 @@
 # Why nanoGPT trains four next tokens at once
 
-> Reading on GitHub: iframe controls and repository-relative HTML video embeds are not active here. Use the static frames, animated GIF previews and MP4 links below. For the interactive version, clone the repo and open this folder's `article.html` with its adjacent `article.assets/` folder; open standalone players locally too.
+> Reading on GitHub: SVG trace frames are static. GIF previews can animate; interactive steppers and video controls run in HTML. Use the static frames, GIF previews and MP4 links below. For the interactive version, clone the repo and open this folder's `article.html` with its adjacent `article.assets/` folder; open standalone players locally too.
 
 
 A decoder generates one token at a time, but a training call can predict the next token at every input position. Understanding that distinction connects the data loader, causal mask, loss, and parameter update. It also explains why a context window of four tokens produces four supervised errors rather than one.
@@ -178,7 +178,9 @@ A same-batch evaluation observes a smaller loss. This is one update, not a conve
 
 </details>
 
+<!-- explain-html-only
 <iframe src="assets/update-player.html" title="Step through the tiny training update" height="650" sandbox="allow-scripts" loading="lazy"></iframe>
+-->
 
 [Open the update stepper](assets/update-player.html). Its presentation durations are illustrative. It does not autoplay. Browser playback and controls have not been verified in this evaluation environment.
 
@@ -224,6 +226,7 @@ GIF timings are illustrative, as in the original clip. Use the MP4 for the full-
 
 </details>
 
+<!-- explain-html-only
 <figure>
   <video controls playsinline preload="metadata" poster="assets/token-flow.poster.png">
     <source src="assets/token-flow.mp4" type="video/mp4">
@@ -231,6 +234,7 @@ GIF timings are illustrative, as in the original clip. Use the MP4 for the full-
   </video>
   <figcaption>Original Manim scene using the same tiny batch and source-supported shapes. Smooth transformations show data flow, not literal memory movement.</figcaption>
 </figure>
+-->
 
 The [editable specification](assets/token-flow.scene.json) and [scene source](assets/token-flow.scene.py) and [reproducible source bundle](assets/token-flow.sources.zip) retain the stage definitions. Static window and attention figures explain the same fixture without playback.
 
@@ -249,6 +253,7 @@ GIF timings are illustrative, as in the original clip. Use the MP4 for the full-
 
 </details>
 
+<!-- explain-html-only
 <figure>
   <video controls playsinline preload="metadata" poster="assets/attention.poster.png">
     <source src="assets/attention.mp4" type="video/mp4">
@@ -256,5 +261,6 @@ GIF timings are illustrative, as in the original clip. Use the MP4 for the full-
   </video>
   <figcaption>A separate illustrative Q/K/V example, with actual calculated values and smooth mathematical transformations. Timings are for presentation.</figcaption>
 </figure>
+-->
 
 </details>

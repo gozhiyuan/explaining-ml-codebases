@@ -17,6 +17,7 @@ MEDIA=IMAGES|VIDEOS|{'.html','.htm','.json','.csv','.txt','.log','.py','.yaml','
 LINK=re.compile(r'(!?\[[^\]]*\]\(\s*)<?([^\s)>]+)>?(\s*(?:"[^"]*")?\))')
 TAG=re.compile(r'<(?:img|video|audio|source|iframe|a)\b[^>]*>',re.I|re.S)
 ATTR=re.compile(r'(\b(?:src|poster|href)\s*=\s*)(["\x27])(.*?)\2',re.I|re.S)
+HTML_ONLY=re.compile(r'<!-- explain-html-only\s*\n([\s\S]*?)\n\s*-->')
 
 
 def main(argv=None):
@@ -84,7 +85,9 @@ def main(argv=None):
                 for i,chunk in enumerate(chunks):
                     if i%2:
                         if '{{' in chunk or '{%' in chunk: chunks[i]='{% raw %}'+chunk+'{% endraw %}'
-                    else: chunks[i]=TAG.sub(tag,LINK.sub(link,chunk))
+                    else:
+                        chunk=HTML_ONLY.sub(lambda m:m.group(1),chunk)
+                        chunks[i]=TAG.sub(tag,LINK.sub(link,chunk))
                 output.append(''.join(chunks))
             for line in lines:
                 marker=re.match(r'^\s*(`{3,}|~{3,})',line)
