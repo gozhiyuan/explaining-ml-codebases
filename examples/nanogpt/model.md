@@ -10,6 +10,17 @@ Paths are relative to the nanoGPT repository root. This document explains the mo
 
 ## Architecture
 
+The model turns each input token into a prediction of the next token.
+
+1. Add token and position vectors so the model knows what is where.
+2. Mix information from allowed earlier positions, then transform each position.
+3. Score every token class and compare those scores with the known next tokens.
+
+**Example (measured fixture).** Two input windows of four IDs become logits
+`[2,4,8]`: eight scores at each position. Comparing them with two target
+windows gives one scalar loss. Shapes and formulas below show how.
+
+
 | Input channel | Tiny shape | Used? | Switch / owner |
 |---|---|---|---|
 | `idx` | int64 `[B,T]=[2,4]` | Yes | Required argument to `GPT.forward` |
@@ -58,6 +69,16 @@ positions int64 [4] -> position embedding [4,8]
 Dimensions: B=2 windows, T=4 positions, D=8 channels, H=2 heads, K=D/H=4 channels per head, V=8 token classes, L=1 block. The character config has B=64,T=256,D=384,H=6,K=64,L=6, and original prepared V=65.
 
 ## model.A Forward and loss
+
+Turn token IDs into scores, then measure whether the known next tokens score well.
+
+1. Combine token and position vectors.
+2. Apply the causal decoder block and final normalization.
+3. Produce vocabulary scores and compare them with the targets.
+
+**Input/output (measured fixture).** IDs and targets `[2,4]` produce scores
+`[2,4,8]` and an initial scalar loss of 2.056858.
+
 
 ### model.A1 Embed tokens and positions (`model.py`)
 

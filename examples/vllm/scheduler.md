@@ -2,7 +2,23 @@
 
 This walkthrough covers token counts and the model-execution boundary. [kv-cache.md](kv-cache.md) explains physical block bookkeeping. Paths below are relative to the source repository root.
 
+## Contents
+
+- [Overview](#overview)
+- [sched.A Scheduling](#scheda-scheduling)
+
 ## Overview
+
+The scheduler chooses the next token positions to run and records the results.
+
+1. Find known tokens that still need computation, accounting for a reusable prefix.
+2. Limit that work to the token budgets and obtain the needed KV blocks.
+3. Hand the plan to the executor, then use its outputs to advance request state.
+
+**Example (illustrative).** For 35 prompt tokens and a budget of 16, the cold
+first plan contains 16 tokens. With 32 prefix tokens already cached, the first
+plan contains 3. Both plans include block metadata for the worker.
+
 
 ```text
 EngineCore.step                         -> engine outputs in CPU memory # vllm/v1/engine/core.py
@@ -19,6 +35,16 @@ EngineCore.step                         -> engine outputs in CPU memory # vllm/v
 | sched.A2 | Request boundaries | Integer counters and ID list | CPU Request | computed=35, known=36 |
 
 ## sched.A Scheduling
+
+Bring the request's completed work closer to its known token list.
+
+1. Count the still-uncomputed tokens and cap the work by available budgets.
+2. Obtain block metadata and send the plan to the executor.
+3. Apply the result to request state before the next iteration.
+
+**Input/output (illustrative).** With 35 known tokens and 32 already cached,
+the plan schedules 3 token positions. Without a cache hit, its first chunk is 16.
+
 
 ### sched.A1 Budget the uncomputed suffix (`vllm/v1/core/sched/scheduler.py`)
 

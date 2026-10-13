@@ -490,6 +490,40 @@
         "browser_status": "not verified: browser security policy rejected local file URL; no workaround attempted.",
         "packaging_status": "HTML plus asset directory structurally checked after relocation; all five local links resolve and player has inline dependencies/static details."
       }
+    },
+    {
+      "id": "engine-step-ownership",
+      "question": "Who plans tokens and who computes model outputs?",
+      "doc": "index.md",
+      "takeaway": "CPU scheduling and block bookkeeping plan the work; the worker owns model computation and KV tensors.",
+      "kind": "original editable SVG architecture map",
+      "assets": [
+        "assets/engine-step.svg"
+      ],
+      "step_ids": [
+        "sched.A1",
+        "sched.A2",
+        "kv.A1",
+        "kv.A2"
+      ],
+      "source_symbols": [
+        "EngineCore.step",
+        "Scheduler.schedule",
+        "Scheduler.update_from_output",
+        "KVCacheManager.allocate_slots",
+        "GPUModelRunner._allocate_kv_cache_tensors"
+      ],
+      "assumptions": [
+        "Illustrative synchronous dense-decoder path, not measured GPU execution.",
+        "Transport, backend kernels, grammar handling and cancellation branches are simplified.",
+        "Arrows indicate calls or metadata, not latency or CPU/GPU overlap."
+      ],
+      "evidence_status": "illustrative",
+      "verification": {
+        "source_status": "EngineCore.step and GPUModelRunner._allocate_kv_cache_tensors read at the recorded source commit; scheduling/cache contracts remain scoped as in the existing evidence.",
+        "static_status": "Browser screenshot of the SVG in a fresh renderer fixture inspected; clear grouping and readable labels at desktop width.",
+        "boundary": "Illustrative ownership map; no timing or GPU execution measurement."
+      }
     }
   ]
 }

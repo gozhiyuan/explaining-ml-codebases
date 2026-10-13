@@ -74,6 +74,11 @@ tests and unverified browser checks explicitly.
   every paragraph a chain of paths/classes. Avoid replies to the blog author.
 - Captions state the view and takeaway. Place figures where they advance the
   argument. Keep series cross-links consistent with delivered posts.
+- Introduce a complex mechanism with a plain purpose, a few meaningful actions
+  and a tiny input/output example before code and math. For polished architecture
+  maps, prefer deliberate SVG layout when Mermaid becomes dense: aligned boxes,
+  named boundaries, short labels and uncluttered connectors. Split ownership,
+  execution order and tensor transformations into separate views when useful.
 - For GitHub repository Markdown, retain static trace frames, video posters
   and explicit Markdown MP4 links outside HTML media tags. Optional GIF previews
   can show motion; collapse looping previews and omit them for static-only

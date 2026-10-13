@@ -22,9 +22,10 @@ gaps without repeatedly jumping between implementation and test files.
 
 ## What you get
 
-- **Developer walkthroughs:** detailed Markdown with source excerpts,
+- **Developer walkthroughs:** clear summaries and steps before detailed source excerpts,
   worked examples, architecture diagrams, test commands/results and gaps.
-- **Optional HTML:** searchable reading view with math, code and embedded media.
+- **Optional HTML:** searchable reading view with per-document TOCs, diagram zoom,
+  math, code and embedded media.
 - **Worked visuals:** editable SVG figures, standalone state players and
   selective videos when motion helps explain the mechanism.
 - **Optional blog articles:** a separate companion turns docs/evidence or source

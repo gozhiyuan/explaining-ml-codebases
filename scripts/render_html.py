@@ -273,10 +273,15 @@ body { margin: 0; font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", 
 #content th { background: var(--bg2); }
 #content blockquote { margin: 0; padding: 0 14px; color: var(--muted); border-left: 4px solid var(--line); }
 #content img, #content video { display: block; max-width: 100%; height: auto; margin: 16px auto; }
+.svg-frame { overflow-x: auto; }
 #content figure { margin: 24px 0; }
 #content figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
 #content iframe { width: 100%; border: 1px solid var(--line); border-radius: 8px; }
-.mermaid { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 10px; text-align: center; overflow-x: auto; }
+.diagram-tools { display: flex; gap: 6px; align-items: center; margin: 14px 0 6px; }
+.diagram-tools button { background: var(--bg2); border: 1px solid var(--line); border-radius: 5px; padding: 4px 10px; cursor: pointer; }
+.diagram-tools small { color: var(--muted); margin-left: 6px; }
+.mermaid { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px; text-align: center; overflow: auto; max-height: 560px; }
+.mermaid svg { display: block; margin: 0 auto; max-width: none; }
 .mermaid-error { color: #cf222e; white-space: pre-wrap; font-family: monospace; font-size: 12px; }
 .mermaid.mermaid-failed { border-color: #cf222e; text-align: left; }
 .math-block { overflow-x: auto; margin: 12px 0; }
@@ -284,6 +289,7 @@ body { margin: 0; font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", 
 #pager a { color: var(--accent); text-decoration: none; }
 #foot { color: var(--muted); font-size: 12px; margin-top: 24px; }
 @media (max-width: 900px) { #side { position: static; width: auto; height: auto; } #main { margin-left: 0; padding: 16px; } }
+@media (max-width: 600px) { #content .svg-frame img { width: var(--figure-width, 700px); max-width: none; } .diagram-tools { flex-wrap: wrap; } }
 @media print { #side, #pager { display: none; } #main { margin: 0; } }
 body.article { font-size: 18px; line-height: 1.8; }
 body.article #side, body.article #pager { display: none; }
@@ -321,19 +327,23 @@ body.article #content figcaption { line-height: 1.6; }
 
   // GitHub-style slugs, so links written for GitHub/Cursor preview resolve here.
   function makeSlugger() {
-    const seen = {};
+    const seen = new Set();
     return function (text) {
-      let s = plain(text).trim().toLowerCase().replace(/[^\p{L}\p{N}_\- ]/gu, "").replace(/ /g, "-");
-      if (seen[s] !== undefined) { seen[s] += 1; s = s + "-" + seen[s]; } else { seen[s] = 0; }
+      const base = plain(text).trim().toLowerCase().replace(/[^\p{L}\p{N}_\- ]/gu, "").replace(/ /g, "-");
+      let s = base, suffix = 0;
+      while (seen.has(s)) s = base + "-" + (++suffix);
+      seen.add(s);
       return s;
     };
   }
 
   function headingsOf(md) {
     const slug = makeSlugger(), out = [];
-    for (const t of marked.lexer(md)) {
-      if (t.type === "heading" && t.depth <= 3) out.push({depth: t.depth, text: plain(t.text), id: slug(t.text)});
-    }
+    marked.walkTokens(marked.lexer(md), t => {
+      if (t.type !== "heading") return;
+      const id = slug(t.text); // Consume deeper headings too, matching the renderer.
+      if (t.depth <= 3) out.push({depth: t.depth, text: plain(t.text), id});
+    });
     return out;
   }
   DOCS.forEach(d => { d.headings = headingsOf(d.md); });
@@ -363,7 +373,10 @@ body.article #content figcaption { line-height: 1.6; }
     renderer(t) { return katexRender(t.text, t.display); }
   };
 
-  let slug = makeSlugger();
+  let slug = makeSlugger(), activeDoc = DOCS[0].name, renderGeneration = 0;
+  const docHref = (name, anchor = "") => "#/" + encodeURIComponent(name) +
+    (anchor ? "#" + encodeURIComponent(anchor) : "");
+  const fragment = value => { try { return decodeURIComponent(value); } catch (_) { return value; } };
   const renderer = {
     heading(text, level, raw) {
       const id = slug(raw);
@@ -381,31 +394,70 @@ body.article #content figcaption { line-height: 1.6; }
       return '<div class="table-wrap"><table><thead>' + header + "</thead><tbody>" + body + "</tbody></table></div>";
     },
     link(href, title, text) {
+      if (/^#(?!\/)/.test(href || "")) href = docHref(activeDoc, fragment(href.slice(1)));
       const m = /^(?:\.\/)?([\w.\-\/]+\.md)(#.*)?$/.exec(href || "");
       if (m) {
         const name = m[1].split("/").pop();
-        if (NAMES.includes(name)) href = "#/" + name + (m[2] || "");
+        if (NAMES.includes(name)) href = docHref(name, fragment((m[2] || "").slice(1)));
       }
       const ext = /^https?:/.test(href || "") ? ' target="_blank" rel="noopener"' : "";
       return '<a href="' + esc(href || "") + '"' + (title ? ' title="' + esc(title) + '"' : "") + ext + ">" + text + "</a>";
     }
   };
   marked.use({gfm: true, extensions: [mathBlock, mathInline], renderer});
-  mermaid.initialize({startOnLoad: false, securityLevel: "strict"});
+  mermaid.initialize({startOnLoad: false, securityLevel: "strict", theme: "base",
+    themeVariables: {fontFamily: "system-ui, sans-serif", fontSize: "16px",
+      primaryColor: "#f1f6ff", primaryTextColor: "#172536", primaryBorderColor: "#6b85a6",
+      lineColor: "#51627a", clusterBkg: "#f8fafc", clusterBorder: "#cbd5e1"},
+    flowchart: {htmlLabels: false, nodeSpacing: 28, rankSpacing: 40, curve: "linear"}});
+
+  function diagramControls(n, source) {
+    const svg = n.querySelector("svg"), box = svg && svg.viewBox.baseVal;
+    if (!box || !box.width || !box.height) return;
+    const tools = document.createElement("div");
+    tools.className = "diagram-tools";
+    tools.setAttribute("role", "group"); tools.setAttribute("aria-label", "Diagram controls");
+    tools.innerHTML = '<button type="button">Fit</button><button type="button" aria-label="Zoom in">+</button>' +
+      '<button type="button" aria-label="Zoom out">−</button><button type="button">Save SVG</button>' +
+      '<small>Zoom to read labels; scroll to pan.</small>';
+    n.before(tools);
+    let scale;
+    function setScale(value) {
+      scale = value;
+      svg.style.maxWidth = "none"; svg.style.width = (box.width * scale) + "px";
+      svg.style.height = "auto";
+    }
+    function fit() { setScale(Math.min(1, Math.max(100, n.clientWidth - 26) / box.width, 500 / box.height)); }
+    const buttons = tools.querySelectorAll("button");
+    buttons[0].onclick = fit;
+    buttons[1].onclick = () => setScale(Math.min(4, scale * 1.4));
+    buttons[2].onclick = () => setScale(Math.max(0.02, scale / 1.4));
+    buttons[3].onclick = () => {
+      const url = URL.createObjectURL(new Blob([source], {type: "image/svg+xml"}));
+      const a = document.createElement("a"); a.href = url; a.download = "diagram.svg"; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+    fit();
+    // Start with readable labels; Fit remains available as a whole-map overview.
+    if (scale < 0.8) setScale(0.8);
+  }
 
   // One diagram at a time, so a broken diagram shows its own error and source
   // in place and the others still render. window.explainDiagramErrors and the
   // page title report the count, for a quick check after rendering.
   let renderSeq = 0;
-  async function renderDiagrams(el, doc) {
+  async function renderDiagrams(el, doc, generation) {
     const nodes = [...el.querySelectorAll(".mermaid")];
     let errors = 0;
     for (const n of nodes) {
       const src = n.textContent, id = "mmd-" + (++renderSeq);
       try {
         const out = await mermaid.render(id, src);
+        if (generation !== renderGeneration) return;
         n.innerHTML = out.svg;
+        diagramControls(n, out.svg);
       } catch (err) {
+        if (generation !== renderGeneration) return;
         errors += 1;
         const stray = document.getElementById("d" + id) || document.getElementById(id);
         if (stray && !el.contains(stray)) stray.remove();
@@ -414,33 +466,47 @@ body.article #content figcaption { line-height: 1.6; }
           esc(String(err && err.message ? err.message : err)) + "</div><pre>" + esc(src) + "</pre>";
       }
     }
+    if (generation !== renderGeneration) return;
     window.explainDiagramErrors = errors;
     document.title = (errors ? "[" + errors + " diagram error" + (errors > 1 ? "s" : "") + "] " : "") + doc.title;
   }
 
   function tocMarkdown(doc) {
     return doc.headings.filter(h => h.depth >= 2).map(h =>
-      "  ".repeat(h.depth - 2) + "- [" + h.text.replace(/[\[\]]/g, "") + "](#/" + doc.name + "#" + h.id + ")").join("\n");
+      "  ".repeat(h.depth - 2) + "- [" + h.text.replace(/[\[\]]/g, "") + "](" + docHref(doc.name, h.id) + ")").join("\n");
   }
 
   function render(name, anchor) {
     const doc = DOCS.find(d => d.name === name) || DOCS[0];
+    activeDoc = doc.name;
+    const generation = ++renderGeneration;
     let md = doc.md.replace(/^\s*(\[TOC\]|\[\[_TOC_\]\])\s*$/gm, () => tocMarkdown(doc));
     slug = makeSlugger();
     const el = document.getElementById("content");
     el.innerHTML = marked.parse(md);
+    el.querySelectorAll("img").forEach(img => {
+      if (!/^data:image\/svg\+xml|\.svg(?:[?#]|$)/i.test(img.src)) return;
+      const frame = document.createElement("div"); frame.className = "svg-frame";
+      img.before(frame); frame.append(img);
+      const size = () => { if (img.naturalWidth) img.style.setProperty("--figure-width", img.naturalWidth + "px"); };
+      img.addEventListener("load", size); size();
+    });
     el.querySelectorAll("pre .copy").forEach(b => b.addEventListener("click", () => {
       navigator.clipboard.writeText(b.nextElementSibling.innerText);
       b.textContent = "copied"; setTimeout(() => { b.textContent = "copy"; }, 1200);
     }));
-    renderDiagrams(el, doc);
+    renderDiagrams(el, doc, generation).then(() => {
+      if (generation === renderGeneration && anchor) {
+        const target = document.getElementById(anchor); if (target) target.scrollIntoView();
+      }
+    });
     const i = DOCS.indexOf(doc), prev = DOCS[i - 1], next = DOCS[i + 1];
     document.getElementById("pager").innerHTML =
       (prev ? '<a href="#/' + prev.name + '">&larr; ' + esc(prev.title) + "</a>" : "<span></span>") +
       (next ? '<a href="#/' + next.name + '">' + esc(next.title) + " &rarr;</a>" : "<span></span>");
     if (!el.querySelector(".mermaid")) document.title = doc.title;
     buildNav(doc.name, "");
-    if (anchor) { const t = document.getElementById(decodeURIComponent(anchor)); if (t) { t.scrollIntoView(); return; } }
+    if (anchor) { const t = document.getElementById(anchor); if (t) { t.scrollIntoView(); return; } }
     window.scrollTo(0, 0);
   }
 
@@ -468,14 +534,26 @@ body.article #content figcaption { line-height: 1.6; }
   }
 
   function route() {
-    const h = decodeURIComponent(location.hash.replace(/^#\/?/, ""));
+    const raw = location.hash.slice(1);
+    const h = fragment(raw.replace(/^\//, ""));
     const cut = h.indexOf("#");
     const name = cut < 0 ? h : h.slice(0, cut), anchor = cut < 0 ? "" : h.slice(cut + 1);
-    render(name || DOCS[0].name, anchor);
+    // A plain Markdown fragment belongs to the current doc, not the first doc.
+    if (raw && !raw.startsWith("/") && !NAMES.includes(name)) {
+      history.replaceState(null, "", docHref(activeDoc, h));
+      render(activeDoc, h);
+    } else render(name || DOCS[0].name, anchor);
   }
   document.getElementById("search").addEventListener("input", e => {
-    const cur = (location.hash.replace(/^#\/?/, "").split("#")[0]) || DOCS[0].name;
-    buildNav(cur, e.target.value);
+    buildNav(activeDoc, e.target.value);
+  });
+  document.addEventListener("click", e => {
+    const link = e.target.closest("a[href]");
+    if (!link || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+    const href = link.getAttribute("href");
+    if (href.startsWith("#/") && href === location.hash) {
+      e.preventDefault(); route(); // Clicking the current TOC target still scrolls there.
+    }
   });
   window.addEventListener("hashchange", route);
   route();

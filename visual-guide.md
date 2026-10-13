@@ -128,6 +128,37 @@ text. Keep the diagram data/editable sources. Do not depend on ImageGen for
 exact token IDs, formulas or source identifiers. Illustrations can be optional
 decoration; they do not replace verified technical figures.
 
+### Architecture diagrams with deliberate layout
+
+For a presentation-quality architecture figure, author an original SVG when
+automatic Mermaid layout cannot express the grouping cleanly. Use a grid:
+aligned boxes, consistent sizes and padding, short titles, one responsibility
+per box, and grouped regions for process, device or trust boundaries. Route
+connectors through clear gutters and label what crosses each boundary. Keep
+edge labels away from boxes and other lines. A dashed border has a named meaning;
+color supplements the labels. Put detailed method names in adjacent prose.
+
+Choose the view before adding nodes: an ownership map, an ordered request path,
+or a tensor transformation. Separate these into related figures when combining
+them obscures the question. A main map typically needs 5-9 meaningful blocks;
+use drill-down diagrams for internals, not a giant graph of every symbol.
+These are design starting points, not a node quota or an excuse to omit a
+critical dependency. Prefer a vertical or grouped layout to a long narrow chain.
+
+Inspect at the actual article width and a mobile width. If fitting the diagram
+makes labels too small, shorten labels, simplify grouping or split the figure.
+Do not solve density by enlarging the whole page. Check box/text overlap, arrow
+direction, connector crossings and caption accuracy. The HTML view offers Fit,
+zoom, scrolling and SVG export for Mermaid diagrams; those controls help inspect
+detail but do not fix an overcomplicated explanation.
+
+The [OpenShell architecture page](https://docs.nvidia.com/openshell/about/architecture)
+is a design reference for clear grouping and restrained styling, not evidence
+about the repo being explained. Borrow layout principles, not its artwork,
+component names or claims. The original
+[vLLM engine-step figure](https://github.com/gozhiyuan/explaining-ml-codebases/blob/main/examples/vllm/assets/engine-step.svg)
+demonstrates those principles with source-reviewed ownership and a stated scope.
+
 ## Self-contained player and static figures
 
 `scripts/render_trace.py` takes complete snapshots and generates a standalone

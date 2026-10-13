@@ -24,6 +24,11 @@ Two depth modes:
 | `simple` | eli5 | newcomer, PM, manager, non-specialist | short. One `index.md`, sub-docs only for very large repos |
 | `deep` (default) | asd-ste100 | engineer who maintains or verifies the code | long. `index.md` plus one sub-doc per subsystem |
 
+Both modes start simply. In deep mode, open the mental model, subsystem
+overviews and new mechanisms with purpose, a few meaningful actions, and a
+small input/output example; put implementation detail below. See "Give the
+reader an easy entry" in [writing-modes.md](writing-modes.md).
+
 Visuals are independent of depth: default to `auto`, with figures where useful
 and selective state animation. Read [visual-guide.md](visual-guide.md) when
 planning visuals. Static-only requests exclude players and videos. Markdown
@@ -302,6 +307,7 @@ from the writers' dims tables and shape flows. Then:
 - Check that headings use the step-ID form (`### train.D1 ...`) and that each step ID has its own heading.
 - Every function or key you name yourself in `index.md`, you open and read first.
 - Read each doc once as a newcomer. If a paragraph is a chain of names and paths with no code and no example, replace it with an excerpt and a walkthrough.
+- Check that overview and mechanism openings explain purpose, actions and the shared example before introducing implementation detail. Keep reference-only sections brief.
 - Add cross-links. Each sub-doc says what it is **not** and links the sibling that covers it.
 - If existing docs were found, add the "Coverage of existing docs" table to `index.md`: each must-cover topic, where this doc set covers it, or why it is out of scope. Link the existing docs. Say which one is the source of truth for what.
 - Shorten paths. A sub-doc whose code lives under one folder declares it once, `<!-- explain-root: <actual scope path> -->`, plus a visible line naming that same path. Then it writes `src/train.py`, not the full path.

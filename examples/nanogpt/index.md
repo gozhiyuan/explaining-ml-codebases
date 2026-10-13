@@ -20,13 +20,19 @@ Source: [karpathy/nanoGPT at the explained commit](https://github.com/karpathy/n
 
 ## Mental model
 
-1. The loader reads a flat stream of token IDs and selects random starting offsets.
-2. Each input window has a target window shifted one token to the right.
-3. The decoder adds token and position embeddings, then applies causal attention and an MLP.
-4. Training predicts a vocabulary distribution at every position, including the final position.
-5. Cross entropy averages eight next-token errors into one scalar for this batch.
-6. Backward fills parameter gradients. Clipping limits their total norm before AdamW changes the weights.
-7. Clearing gradients ends the update. The batch fetched before backward belongs to the next micro-step.
+A training step turns a few text windows into slightly changed model weights.
+The model guesses what comes next, compares its guesses with the known next
+tokens, and uses those errors to adjust its weights.
+
+1. **Make examples.** The loader cuts token windows from a file and pairs each window with the same window shifted one token forward.
+2. **Make predictions.** The model guesses the next token at every position. Each position can use only its earlier context and itself.
+3. **Measure mistakes.** The loss combines the errors into one number.
+4. **Change the weights.** Backward computes gradients, which describe how weights affect the loss. Clipping limits their total size; AdamW applies the update and clears the gradients for the next step.
+
+**Small example (measured fixture).** Input `[7,0,1,2]` has targets `[0,1,2,3]`.
+There are two windows, so the model makes eight predictions. This update changes a model with
+888 parameters; the loss on the same batch falls from 2.056858 to
+2.044125. That is a fixture result, not a convergence or generalization claim.
 
 ## At a glance
 
@@ -86,15 +92,15 @@ Figure: fixture IDs, measured sampled windows. Each column predicts the token di
 
 ## Major components
 
-| Component | File | Role | Owner |
-|---|---|---|---|
-| `get_batch` | `train.py` | Cut random shifted windows | Training process |
-| `GPT` | `model.py` | Embed, decode, project, compute loss | Training process |
-| `Block` | `model.py` | Pre-norm attention and MLP with residuals | `GPT` |
-| `CausalSelfAttention` | `model.py` | Mix only current and earlier positions | `Block` |
-| `MLP` | `model.py` | Expand and contract channels at each position | `Block` |
-| `LayerNorm` | `model.py` | Normalize the final channel axis | Block and final model norm |
-| `get_lr` | `train.py` | Warmup and cosine schedule | Training process |
+| Component | Job in plain words | Receives | Produces | Source |
+|---|---|---|---|---|
+| `get_batch` | Cut windows and pair them with next tokens | Flat token file and sampled offsets | Input and target tensors `[2,4]` | `train.py` |
+| `GPT` | Predict next tokens and measure their errors | IDs and targets `[2,4]` | Scores `[2,4,8]` and scalar loss | `model.py` |
+| `Block` | Mix allowed context, then transform each position | Hidden vectors `[2,4,8]` | Updated vectors with the same shape | `model.py` |
+| `CausalSelfAttention` | Combine information from this position and earlier ones | Hidden vectors | Context-mixed vectors, same shape | `model.py` |
+| `MLP` | Expand channels, apply GELU, and reduce channels | Eight-channel hidden vectors | Eight-channel transformed vectors | `model.py` |
+| `LayerNorm` | Normalize a position's channel values | Hidden vectors | Normalized vectors, same shape | `model.py` |
+| `get_lr` | Choose the learning rate for this iteration | Iteration and schedule settings | One learning-rate value | `train.py` |
 
 ```mermaid
 classDiagram

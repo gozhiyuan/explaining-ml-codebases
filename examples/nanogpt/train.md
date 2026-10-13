@@ -11,6 +11,18 @@ Paths are relative to the nanoGPT repository root. This document follows the loa
 
 ## Overview
 
+This part prepares a small training batch and uses its prediction errors to
+change the model weights.
+
+1. Cut token windows and pair them with the following tokens.
+2. Run the model and combine the prediction errors into one loss.
+3. Compute gradients, limit their norm, update weights, and clear gradients.
+
+**Example (measured fixture).** Input row `[7,0,1,2]` becomes targets
+`[0,1,2,3]`; the update changes weights and reduces same-batch loss from
+2.056858 to 2.044125. The call tree and measurements below give the details.
+
+
 ```text
 get_batch -> X,Y int64 [2,4], CPU                         # train.py train.A1
   └─ random offsets -> windows shifted by one
@@ -34,6 +46,15 @@ optimizer.zero_grad -> gradients None                    # train.py train.B2
 Running example: B=2, T=4, D=8, H=2, K=4, V=8, L=1, A=1, seed 1337. Dropout=0, bias=False, float32, CPU.
 
 ## train.A Data windows
+
+Build paired windows so every input position has a known next-token answer.
+
+1. Choose starting offsets in the flat token file.
+2. Slice each input window and its one-token-shifted target window.
+
+**Input/output (measured fixture).** The 12-token stream produces two
+`[2,4]` tensors; one row is X=`[7,0,1,2]`, Y=`[0,1,2,3]`.
+
 
 ### train.A1 Select shifted token windows (`train.py`)
 
@@ -75,6 +96,16 @@ else:
 Gap: sampler boundaries, the validation file branch, and actual text encoding need separate tests.
 
 ## train.B Parameter update
+
+Use the batch's loss to adjust the weights for future predictions.
+
+1. Set the learning rate and optimizer parameter groups.
+2. Compute gradients from the scalar loss.
+3. Clip the total gradient norm, apply AdamW, and clear gradients.
+
+**Input/output (measured fixture).** The initial model and batch have loss
+2.056858. After this update, the same batch has loss 2.044125.
+
 
 ### train.B1 Set learning rate and optimizer groups (`train.py`, `model.py`)
 

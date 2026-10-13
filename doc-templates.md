@@ -36,16 +36,12 @@ Scope: <golden path in one line>. Not covered: <list, or "see Out of scope">.
 
 ## Mental model
 
-<What a reader must hold in their head after 60 seconds. 4-8 numbered
-sentences, one per stage or process, in the order data moves. Each names the
-thing, what it turns into, and the one fact that surprises people. No code
-references here. Example for a training repo:
-
-1. A one-time script turns text into a flat file of token ids.
-2. Each training step cuts random windows from that file. There are no epochs.
-3. The model predicts the next token at every position at once.
-4. The loss is the mean cross-entropy over those positions.
-5. Every N steps the loop measures val loss and saves only if it improved.>
+<One plain sentence: what arrives and what useful result the system produces.
+Then 3-6 numbered actions along the selected path. Each says who changes what,
+and what goes to the next component. Define essential terms in ordinary words.
+Keep implementation names, formulas and exceptions for later sections. Finish
+with a tiny input/output pair from the shared example, labeled with provenance.
+See the progressive explanation guidance in writing-modes.md.>
 
 ## At a glance
 
@@ -56,8 +52,9 @@ references here. Example for a training repo:
 
 ## Big picture
 
-<Mermaid flowchart of the stages or processes. Then 3-6 sentences that walk
-the diagram in order.>
+<Compact Mermaid or original SVG map of stages, processes or ownership.
+Then walk the selected path in a few plain actions. Keep internal details in
+related drill-down diagrams.>
 
 ## Running example
 
@@ -68,12 +65,12 @@ short table: stage, what the example looks like after it.>
 
 | Doc | Covers | Entry point | Read it when |
 |-----|--------|-------------|--------------|
-| [train.md](train.md) | data loading, model, loss, loop | `train.py:main` | you change the model or the loss |
+| <subsystem doc link> | <its responsibility> | <actual entry symbol and file> | <reader's question> |
 
 ## Major components
 
-| Component | File | Role | Called by | Calls |
-|-----------|------|------|-----------|-------|
+| Component | Job in plain words | Receives | Produces | Source |
+|-----------|--------------------|----------|----------|--------|
 
 <Mermaid `classDiagram` of the main classes: composition (`*--`), inheritance
 (`<|--`), and calls (`..>`), with the key fields and methods. Use a
@@ -90,7 +87,7 @@ repo does not have. Each sub-doc may hold a more detailed version.>
 
 | Step | Input | Output | Code | Doc |
 |------|-------|--------|------|-----|
-| data.A1 | raw parquet `[rows, 12 cols]` | labels parquet | `build_labels` in `prep.py` | [data.md](data.md) |
+| <step ID> | <actual input> | <actual output> | <symbol and file> | <subsystem doc link> |
 
 ## Test coverage
 
@@ -158,6 +155,10 @@ Running example used below: <short excerpt from index.md>.
 
 ## Overview
 
+<One sentence: what this subsystem accomplishes. Then 2-4 meaningful actions
+in execution order, or actor/dependency descriptions for parallel work. Show
+one small input/output pair from the shared example before the call tree.>
+
 <ASCII call tree of the whole subsystem with step IDs, one line per call.>
 
 Each node that produces something the next step uses ends with `-> output`:
@@ -165,23 +166,20 @@ the artifact, its type and shape, and where it lives. Nodes that only
 dispatch get no tag. Keep each tag short, and put the detail in the
 artifacts table.
 
-```
-main                                  -> best_model.pt (S3 model dir)              # train_entry.py  train.A1
-  ├─ load_config                      -> cfg dict, 40 keys (memory)                # config.py       train.A1
-  ├─ create_dataloaders               -> 2 DataLoaders, batch dict of [B,T,...]    # dataset.py      train.B1
-  └─ Trainer.train                    -> best_model.pt, history list[dict]         # train.py        train.E1
-```
+<Fill the call tree from the actual source; do not assume a Trainer class,
+DataLoader, checkpoint format or storage service that the repo does not use.>
 
 Right under the tree, the artifacts table lists every output the reader will
 meet in the doc:
 
 | Step | Artifact | Type and shape | Lives in | Example |
 |------|----------|----------------|----------|---------|
-| train.A1 | `cfg` | `dict`, 40 keys | memory | `{"epochs": 50, "lr": 1e-4, ...}` |
-| train.B1 | batch | `dict[str, Tensor]`, `categorical_ids [32, 240, C]` ... | GPU memory | see train.B2 |
-| train.E1 | `best_model.pt` | `state_dict`, 3.4M params | `/opt/ml/model/` then S3 | written when val loss improves |
+| <step ID> | <actual artifact> | <type and dimensions> | <observed location> | <shared example, labeled with provenance> |
 
 ## <code>.A <Stage group name>
+
+<Plain purpose sentence, a short list of meaningful actions and an input/output
+pair when this group introduces a mechanism. Then the detailed steps below.>
 
 ### <code>.A1 <Step name> (`path/to/file.py`)
 
@@ -223,11 +221,12 @@ this card uses.>
 
 | Config key | Value | Source |
 |------------|-------|--------|
-| hidden size | 4096 | `hidden_size` in the checkpoint `config.json` |
+| <actual key> | <selected value> | <defining file and symbol> |
 
 ## Architecture
 
-<Mermaid flowchart TB with shapes on edges, as in playbook 7.>
+<Plain purpose, a few actions and a tiny input/output pair. Then a compact
+Mermaid flowchart TB or original SVG with shapes, as in playbook 7.>
 
 <ASCII shape flow with the same shapes and real numbers.>
 
@@ -380,7 +379,7 @@ answers:
 | Question | Diagram | Where |
 |----------|---------|-------|
 | What are the stages or processes, and what flows between them? | `flowchart` | index Big picture, each sub-doc Overview |
-| How does data move through the model's layers, with what shapes? | `flowchart TB` with shapes on edges | every model architecture section and architecture card (required) |
+| How does data move through the model's layers, with what shapes? | `flowchart TB` or original SVG with shapes | every model architecture section and architecture card (required) |
 | Which classes hold or extend which? | `classDiagram` | index Major components, model sub-doc |
 | What happens, in order, in one training step or one request? | `sequenceDiagram` | index Key sequences, train and serve sub-docs |
 | Which states does a request or job move through? | `stateDiagram-v2` | scheduler or job lifecycle sections |
@@ -394,7 +393,7 @@ supports. Rules that avoid render errors:
 - Node IDs are plain words with no spaces: `engine_core`, not `engine core`.
 - In `sequenceDiagram`, write aliases without quotes (`participant EC as EngineCore`). Quotes render literally there. Keep `;` and `#` out of message text.
 - Mermaid keywords ignore case. A participant id such as `Opt`, `End`, `Loop`, `Alt`, `Par`, `Note`, `Box`, or `Rect` is read as the keyword, and the whole diagram fails. Use ids like `Optim`, `Done`, `Looper`. In a flowchart, never use a lowercase node id `end`.
-- Keep each diagram under ~25 nodes. Split a bigger one.
+- Give the main diagram one question and a few meaningful blocks. Move internals to drill-down figures. Inspect rendered labels at content width; a node-count limit alone does not ensure readability. See [visual-guide.md](visual-guide.md).
 
 For source-grounded examples, see the
 [vLLM request and ownership diagrams](https://github.com/gozhiyuan/explaining-ml-codebases/blob/main/examples/vllm/index.md) and

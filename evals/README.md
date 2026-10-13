@@ -4,6 +4,9 @@
 actual independent agent outputs from 2026-10-09 and a per-case `evaluation.json`.
 Two agents used the core and companion instructions; the parent reviewed
 selected source claims and implemented packaging/animation/site checks.
+The examples' introductory explanations and vLLM architecture figure were
+revised on 2026-10-13. Separate renderer regressions are recorded in `results.json`;
+these revisions are not a new independent writing evaluation.
 
 For a fresh behavioral evaluation, give an agent a case request, the skills
 and a clean pinned checkout. Keep outputs outside source. Do not provide the
@@ -24,6 +27,20 @@ python scripts/replay_evaluations.py --nanogpt /path/to/nanogpt --vllm /path/to/
   --python /path/to/eval-tools/bin/python --out /path/to/new-output
 python -m unittest discover -s tests -v
 ```
+
+The optional real-browser renderer regression uses Playwright and a browser:
+
+```bash
+# With Playwright available to Node and an installed Chrome:
+PLAYWRIGHT_CHANNEL=chrome node tests/test_html_navigation.mjs
+# Or omit PLAYWRIGHT_CHANNEL to use Playwright's installed Chromium.
+```
+
+This generates fresh synthetic Markdown fixtures and checks local/cross-document
+TOC links, encoded Unicode anchors, duplicate heading IDs, back navigation,
+diagram fit/zoom and mobile page width. It does not run models or validate video
+playback. CDN rendering libraries need network access. Pass `--artifacts /path/to/new-output`
+to retain inspection screenshots. Keep optional browser tools outside the skill.
 
 The replay runs fixtures/checkers/renderers, without generating new prose or
 testing an agent's decisions. Keep dependencies in a separate environment.

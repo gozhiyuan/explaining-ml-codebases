@@ -10,6 +10,17 @@ This document covers full-attention block metadata for R. [scheduler.md](schedul
 
 ## Overview
 
+The KV manager gives a request ownership of the memory blocks its next step needs.
+
+1. Find complete prefix blocks with matching context.
+2. Check capacity, attach reused blocks, and reserve blocks for the new suffix.
+3. Record cache metadata; the worker later writes new keys and values.
+
+**Example (illustrative).** A 35-token prompt with block size 16 can reuse
+blocks 1 and 2 for the first 32 tokens. It still needs block 3 for the tail.
+A block ID or a hash entry alone does not prove that new KV values are ready.
+
+
 ```text
 KVCacheManager.get_computed_blocks       -> grouped hits, token count, boundary # vllm/v1/core/kv_cache_manager.py kv.A1
   └─ UnitaryKVCacheCoordinator.find_longest_cache_hit -> one-group result        # vllm/v1/core/kv_cache_coordinator.py kv.A1
@@ -28,6 +39,16 @@ KVCacheManager.allocate_slots            -> newly allocated blocks or None      
 | kv.A3 | Cache index | Hash-to-block metadata map | CPU BlockPool | h1 maps to block 1 |
 
 ## kv.A Prefix and capacity
+
+A cache hit can save computation only when the request can own the required pages.
+
+1. Look up matching complete prefix blocks.
+2. Check capacity, attach the hits, and allocate the missing suffix blocks.
+3. Register eligible hash metadata, keeping it distinct from completed KV.
+
+**Input/output (illustrative).** A 35-token request reuses blocks 1 and 2 for
+32 prefix tokens and reserves block 3 for the final three input tokens.
+
 
 ### kv.A1 Look up the prefix, with a last-token limit (`vllm/v1/core/kv_cache_manager.py`)
 

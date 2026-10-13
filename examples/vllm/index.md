@@ -25,12 +25,20 @@ Source: [vLLM at the explained commit](https://github.com/vllm-project/vllm/tree
 
 ## Mental model
 
-1. The scheduler tracks how many known tokens still need computation.
-2. Each iteration gives requests a compute-token budget and an input-token budget.
-3. A prefix hit advances the request's starting position without spending that iteration's compute budget.
-4. KV allocation still needs slots for the full prefix and the new suffix.
-5. Cache metadata can register during scheduling, before the model writes KV tensors.
-6. A sampled output token becomes known now, but its own KV usually arrives in the next decode step.
+The engine turns a request's token IDs into model work, then uses the result
+to advance that request. Think of the scheduler as a planner: it chooses the
+next work, while the worker performs it.
+
+1. **Choose the next tokens.** The scheduler finds which known tokens still need work.
+2. **Get memory for them.** The KV manager attaches reusable blocks and reserves any new blocks. KV means the model's saved attention keys and values.
+3. **Run the plan.** The executor sends the chosen positions and block IDs to the model worker.
+4. **Update the request.** The scheduler records results. A generated token becomes input to a later step.
+
+**Small example (illustrative).** A 35-token prompt with no saved prefix needs
+chunks of 16, 16 and 3 tokens under this budget. With 32 matching tokens already
+computed and cached, only the final 3 need model work. Both cases still need
+memory covering all 35 input positions. Details below explain the bookkeeping
+and when saved values are ready to use.
 
 ## At a glance
 
@@ -50,19 +58,16 @@ All values below are chosen for this illustrative example, not production defaul
 
 ## Big picture
 
-```mermaid
-flowchart LR
-    req["Request: known token IDs"] --> sched["Scheduler: admit request"]
-    sched --> lookup["Prefix lookup: reused positions"]
-    lookup --> budget["Choose uncomputed suffix within budget"]
-    budget --> alloc["KV manager: attach and allocate blocks"]
-    alloc --> batch["SchedulerOutput: positions and block IDs"]
-    batch --> model["Executor: compute KV and sample"]
-    model --> update["Scheduler: append output tokens"]
-    update --> sched
-```
+![One engine step: CPU scheduling and worker model execution](assets/engine-step.svg)
 
-The diagram's arrows represent control and returned metadata. KV tensors live on the selected worker's GPU; CPU bookkeeping maps request positions to block IDs. The diagram does not claim GPU timing or overlap.
+*An original, source-reviewed ownership map for this synchronous path. CPU
+bookkeeping manages block IDs; the worker owns model computation and KV tensors.
+Arrows show calls or metadata, not timing or overlap. The executor/transport,
+backend kernels and cancellation branches are simplified.*
+
+`EngineCore.step` in `vllm/v1/engine/core.py` schedules work, calls the executor,
+waits for its result, and applies that result to the scheduler. A reused prefix
+changes the work chosen; it does not eliminate storage for that prefix.
 
 ## Running example
 
@@ -94,14 +99,14 @@ Cold and warm are alternative executions of the same request R. In the warm case
 
 ## Major components
 
-| Component | File | Role | Called by | Calls |
+| Component | Job in plain words | Receives / uses | Produces / changes | Source |
 |---|---|---|---|---|
-| `EngineCore` | `vllm/v1/engine/core.py` | Schedule, execute, receive outputs | Engine loop | Scheduler and executor |
-| `Scheduler` | `vllm/v1/core/sched/scheduler.py` | Request queues and token counts | EngineCore | KV manager |
-| `KVCacheManager` | `vllm/v1/core/kv_cache_manager.py` | Capacity and group-level orchestration | Scheduler | Coordinator |
-| `UnitaryKVCacheCoordinator` | `vllm/v1/core/kv_cache_coordinator.py` | One-group dispatch | KV manager | Full-attention manager |
-| `FullAttentionManager` | `vllm/v1/core/single_type_kv_cache_manager.py` | Whole-prefix lookup | Coordinator | BlockPool |
-| `BlockPool` | `vllm/v1/core/block_pool.py` | Ref counts, free queue and hash index | Group manager | Block metadata |
+| `EngineCore` | Run one schedule, execute, and update cycle | Scheduler plan and executor result | Engine outputs and execution flag | `vllm/v1/engine/core.py` |
+| `Scheduler` | Choose token work, then advance requests | Request queues, budgets, model outputs | Token counts in the plan; updated request state | `vllm/v1/core/sched/scheduler.py` |
+| `KVCacheManager` | Give requests the blocks they need | Request positions and reusable prefix blocks | Hit metadata, allocated blocks, or allocation failure | `vllm/v1/core/kv_cache_manager.py` |
+| `UnitaryKVCacheCoordinator` | Delegate work for this one cache group | Group lookup and allocation operations | The group's block results | `vllm/v1/core/kv_cache_coordinator.py` |
+| `FullAttentionManager` | Find matching complete prefix blocks | Prefix hashes and lookup limits | Reusable block metadata | `vllm/v1/core/single_type_kv_cache_manager.py` |
+| `BlockPool` | Track shared and available block metadata | Block references, releases, and hashes | Reference counts, free queue, hash index | `vllm/v1/core/block_pool.py` |
 
 ```mermaid
 classDiagram

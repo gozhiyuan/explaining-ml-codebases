@@ -17,6 +17,32 @@ read them for more detail. This file is enough on its own.
 - **Concrete over abstract.** Every abstract sentence gets an example within a few lines.
 - **No arrow chains in prose.** "A -> B -> C fails" goes in a diagram. In prose, write a sentence.
 
+### Give the reader an easy entry into deep detail
+
+Depth means complete evidence, not a difficult introduction. The mental model
+starts with the system's job and the input it turns into a result. Follow with
+3-6 main actions in execution order: who acts, what it receives, and what it
+produces. Use ordinary words before introducing code names, counters or math.
+Put branches, exceptions and invariants in the detailed sections that need them.
+If several paths exist, introduce the selected path before comparing variants.
+
+At each subsystem overview and each section that introduces a new mechanism:
+
+1. Open with one sentence saying what this part accomplishes and why it exists.
+2. Give a short ordered list of the meaningful actions, usually 2-4. Describe
+   changes to data or state, not a list of function names.
+3. Show a small input/output pair from the shared example, with its provenance.
+4. Then add source excerpts, formulas, ownership rules, tests and alternatives.
+
+Keep this proportional: a short single-action step needs only its existing
+Idea/Input/Output labels. A glossary or test matrix needs no artificial process
+list. For parallel work, describe the actors and dependencies rather than invent
+a total execution order. Do not repeat the whole overview inside every step.
+
+Check the opening alone: can a newcomer say what arrives, who changes it, and
+what comes out without consulting the code? If not, simplify the opening while
+retaining the technical detail below it. Explain essential terms where used.
+
 ### Point at code by name, not by line
 
 Readers do not jump to line numbers, and line numbers go stale on the next

@@ -99,5 +99,30 @@
     },
     "mp4_files": "Existing 3 H264 1280x720 clips verified with FFprobe",
     "boundary": "GFM API retains SVG/GIF images and MP4 links. HTML-only comments hide iframe/video markup; restored embeds and packaged assets checked in generated HTML. GIF frames inspected; browser playback and controls remain unverified."
+  },
+  "renderer_update": {
+    "date": "2026-10-13",
+    "status": "pass",
+    "command": "PLAYWRIGHT_CHANNEL=chrome node tests/test_html_navigation.mjs",
+    "environment": "Playwright with installed Chrome; Node 22; renderer CDN libraries",
+    "checks": [
+      "manual and generated local TOCs stay in their current document",
+      "cross-document links and browser back navigation",
+      "encoded Unicode fragments",
+      "unique IDs including repeated and deeper headings",
+      "Mermaid fit/zoom and mobile page width"
+    ],
+    "viewports": {
+      "desktop": [
+        1280,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "visual_review": "Desktop/mobile fixture screenshots and original engine-step SVG inspected; labels readable when zoomed, no page overflow or figure text overlap observed.",
+    "boundary": "Fresh synthetic renderer fixtures and a source-reviewed illustrative SVG. Not a fresh agent writing evaluation, full vLLM run or video playback verification."
   }
 }

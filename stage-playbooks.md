@@ -142,7 +142,9 @@ window (archetypes I and N in [ml-archetypes.md](ml-archetypes.md)).
 
 **Must show.**
 - **Inputs inventory (do this before the diagram).** List every argument of the model's `forward` and every input channel built in `__init__` (each embedding, projection, and side input). For each one, say whether the golden path uses it and what switches it: a config key, a value that the data produces (a vocab size above 0, an encoder file that exists, columns present in the split), or the checkpoint. A channel that production data turns on is on the golden path, even when its default is off and even when the running example has no value for it. In that case, give the running example a value (for example categorical input IDs), and explain the channel like any other. Mark only the channels that are really off, with the reason.
-- **Architecture diagram (required, first).** A Mermaid `flowchart TB` that
+- **Architecture view (required).** After a plain purpose sentence, a few
+  actions and a small input/output pair, show a Mermaid `flowchart TB` or an
+  original SVG architecture map that
   draws how data moves through the model, from the input tensors to every
   output head. This is the picture readers look for first. Rules:
   - One node per block (embedding, each distinct layer type, norm, heads). Draw a repeated stack once and label it `× N`.
@@ -178,7 +180,7 @@ plain nodes, not circles.
 - **Worked example.** Push the running example through one block with tiny numbers.
 - **Hardware notes.** Python loops over layers or features, host-device syncs, memory peaks, fused kernels used.
 
-**Diagrams.** All three are required: the architecture flowchart with shapes
+**Diagrams.** All three are required: the architecture view with shapes
 (above), the ASCII shape flow, and a Mermaid `classDiagram` of the module tree
 with composition counts (use the selected configuration's repetition count) and key fields.
 
