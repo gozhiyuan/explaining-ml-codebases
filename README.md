@@ -1,5 +1,7 @@
 # Explaining ML Codebases
 
+**Turn a large ML repo into an explanation you can read, inspect and verify.**
+
 An agent skill for **Codex, Claude Code, Cursor**, and other agents that support
 `SKILL.md`. Navigate large ML, LLM and data engineering repos and review
 AI-generated code with explanations you can check: source excerpts, tensor
@@ -7,6 +9,11 @@ shapes, concrete intermediate values, math, and tests with honest status.
 
 Follow one example across a stream processor, training ranks or serving workers.
 See what each step produces, who owns it, and where it goes next.
+
+I built this from my experience reading ML codebases and writing technical
+blog posts, with months of iteration alongside AI agents. It captures the
+habits I find useful: understand the structure, trace a concrete example,
+read the important code, check the tests, and make the mechanism visible.
 
 ## Why use it?
 
@@ -22,12 +29,17 @@ gaps without repeatedly jumping between implementation and test files.
 
 ## What you get
 
-- **Developer walkthroughs:** clear summaries and steps before detailed source excerpts,
-  worked examples, architecture diagrams, test commands/results and gaps.
+- **Code structure and walkthroughs:** clear component summaries and ordered
+  steps, followed by real source excerpts, math and example inputs/outputs.
+- **Tests alongside the explanation:** relevant test commands, actual results
+  and uncovered behavior, so you can distinguish explained logic from tested logic.
 - **Optional HTML:** searchable reading view with per-document TOCs, diagram zoom,
   math, code and embedded media.
-- **Worked visuals:** editable SVG figures, standalone state players and
-  selective videos when motion helps explain the mechanism.
+- **High-quality diagrams:** editable SVG architecture maps, worked figures
+  and interactive state players, designed for readable labels and clear boundaries.
+- **Optional explanation videos:** original Manim scenes for math, model
+  architecture and complex workflows, with **3Blue1Brown-inspired visual teaching**
+  when requested. Full explanations need their own storyboard and scene work.
 - **Optional blog articles:** a separate companion turns docs/evidence or source
   into narrative articles or a series, with Markdown and article HTML.
 
@@ -155,6 +167,15 @@ platform dependencies. Missing video tools fall back to SVG/player output;
 missing repo test dependencies are reported as `not run`. A missing mandatory
 runtime or asset is reported as a blocker for that output. See
 [setup and fallback behavior](INSTALLATION.md#dependencies-and-fallbacks).
+
+## Danger zone: personal taste
+
+This skill reflects my taste in technical writing: concrete examples, clear
+steps, source code beside the explanation, and visuals that show what changes.
+Treat it as a starting template. Keep what helps, and adjust the voice, depth,
+structure, diagram style and use of animation to suit your readers and your own
+writing style. The source citations and honest test status are useful to retain
+even when the presentation changes.
 
 ## Learn more
 
