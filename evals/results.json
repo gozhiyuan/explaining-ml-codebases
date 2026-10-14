@@ -2,8 +2,9 @@
   "date": "2026-10-09",
   "unit_tests": {
     "status": "pass",
-    "count": 21,
-    "command": "python -m unittest discover -s tests -v"
+    "count": 23,
+    "command": "python -m unittest discover -s tests -v",
+    "date": "2026-10-13"
   },
   "skills": {
     "core": "quick_validate passed",
@@ -124,5 +125,20 @@
     },
     "visual_review": "Desktop/mobile fixture screenshots and original engine-step SVG inspected; labels readable when zoomed, no page overflow or figure text overlap observed.",
     "boundary": "Fresh synthetic renderer fixtures and a source-reviewed illustrative SVG. Not a fresh agent writing evaluation, full vLLM run or video playback verification."
+  },
+  "diagram_review_update": {
+    "date": "2026-10-13",
+    "status": "pass",
+    "changes": [
+      "Removed repeated class-name hierarchy from the vLLM index; retained grouped ownership SVG, component table and detailed source call tree.",
+      "Removed diagram-type quotas from templates, writer prompts and doc-set checker.",
+      "Kept the shared tensor-shape reference validation."
+    ],
+    "checks": [
+      "23 unit tests passed, including two doc-set checker regressions",
+      "vLLM docs: 0 errors and 0 warnings",
+      "HTML regenerated; index payload contains grouped SVG and no class diagram"
+    ],
+    "boundary": "Editorial guidance and structural regression checks; not a fresh independent agent writing evaluation."
   }
 }

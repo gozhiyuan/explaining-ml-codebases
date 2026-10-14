@@ -108,14 +108,10 @@ Cold and warm are alternative executions of the same request R. In the warm case
 | `FullAttentionManager` | Find matching complete prefix blocks | Prefix hashes and lookup limits | Reusable block metadata | `vllm/v1/core/single_type_kv_cache_manager.py` |
 | `BlockPool` | Track shared and available block metadata | Block references, releases, and hashes | Reference counts, free queue, hash index | `vllm/v1/core/block_pool.py` |
 
-```mermaid
-classDiagram
-    Scheduler *-- KVCacheManager
-    KVCacheManager *-- UnitaryKVCacheCoordinator
-    UnitaryKVCacheCoordinator *-- FullAttentionManager
-    FullAttentionManager --> BlockPool
-    EngineCore --> Scheduler
-```
+The scheduler delegates memory bookkeeping to the KV manager. For this one
+cache group, the coordinator selects the full-attention manager, which uses
+the block pool's shared metadata. The [cache walkthrough](kv-cache.md#overview)
+traces these source calls and their returned block metadata.
 
 ## Key sequences
 

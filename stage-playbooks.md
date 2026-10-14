@@ -180,9 +180,10 @@ plain nodes, not circles.
 - **Worked example.** Push the running example through one block with tiny numbers.
 - **Hardware notes.** Python loops over layers or features, host-device syncs, memory peaks, fused kernels used.
 
-**Diagrams.** All three are required: the architecture view with shapes
-(above), the ASCII shape flow, and a Mermaid `classDiagram` of the module tree
-with composition counts (use the selected configuration's repetition count) and key fields.
+**Diagrams.** Show the architecture view with shapes and a readable text shape
+flow. Add a class/module diagram only when it explains an additional relationship,
+such as weight sharing or meaningful repetition. Avoid a second picture that
+only repeats the architecture or stacks module names in empty class boxes.
 
 **Tests to look for.** Forward pass output shapes. Mask correctness. A known-value test on a tiny config.
 

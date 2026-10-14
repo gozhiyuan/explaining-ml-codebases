@@ -933,19 +933,9 @@ def check_doc(doc: Path, idx: RepoIndex, mode: str, n_docs: int, rep: Report):
 
 
 def check_doc_set(docs, mode, rep):
-    """Checks that span the whole doc set: diagram coverage, shapes cheat sheet."""
+    """Check shared references; diagram types are chosen for explanatory value."""
     texts = {d: d.read_text(errors="ignore") for d in docs}
     index = next((d for d in docs if d.name == "index.md"), None)
-    if mode == "deep" and len(docs) > 1:
-        joined = "\n".join(texts.values())
-        for kind in ("classDiagram", "sequenceDiagram"):
-            if not re.search(rf"```mermaid\s*\n\s*{kind}", joined):
-                rep.add(
-                    "WARN",
-                    index or docs[0],
-                    0,
-                    f"no Mermaid {kind} anywhere in the doc set",
-                )
     if index is not None and any(SHAPE_RE.search(t) for t in texts.values()):
         if not re.search(r"^#+\s+Shapes cheat sheet", texts[index], re.M | re.I):
             rep.add(

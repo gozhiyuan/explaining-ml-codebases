@@ -72,9 +72,10 @@ short table: stage, what the example looks like after it.>
 | Component | Job in plain words | Receives | Produces | Source |
 |-----------|--------------------|----------|----------|--------|
 
-<Mermaid `classDiagram` of the main classes: composition (`*--`), inheritance
-(`<|--`), and calls (`..>`), with the key fields and methods. Use a
-`flowchart` instead only when the code is mostly functions, not classes.>
+<Add a relationship diagram only if it answers a question the table and big
+picture do not already answer. A class diagram can explain meaningful
+inheritance, shared ownership or module repetition. Do not turn a delegation
+chain into empty class boxes. Use the subsystem call tree for that detail.>
 
 ## Key sequences
 
@@ -384,8 +385,8 @@ answers:
 | What happens, in order, in one training step or one request? | `sequenceDiagram` | index Key sequences, train and serve sub-docs |
 | Which states does a request or job move through? | `stateDiagram-v2` | scheduler or job lifecycle sections |
 
-A deep doc set has at least one of each of the first three that the repo
-supports. Rules that avoid render errors:
+Choose diagrams by the question, with no quota for types. Omit a diagram that
+merely repeats a table, another figure or a call tree. Rules that avoid render errors:
 
 - Start the block with the diagram type: `flowchart LR`, `sequenceDiagram`, `classDiagram`, `stateDiagram-v2`.
 - Quote any label that has spaces, parentheses, brackets, or punctuation: `A["EngineCore (busy loop)"]`.

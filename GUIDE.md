@@ -77,8 +77,9 @@ example values and explicit verification status.
   sampler, or attention backend, the doc shows the switch (key, default,
   factory), explains the variant your config uses in depth, and compares the
   others in one table with their formulas, files, users, and tests.
-- **Diagrams.** ASCII call trees with the output of each call, plus Mermaid
-  flowcharts, class diagrams, and sequence diagrams.
+- **Diagrams.** Call trees show source detail. Mermaid or SVG figures explain
+  a selected question about architecture, values or execution. Diagram types
+  are optional; a repeated class-name chain adds no useful view.
 - **Code by name, not by line number.** "`make_model` in `training.py`", not
   `training.py:212`. Names survive edits. Line numbers do not.
 - **Plain language.** `deep` mode writes in a Simplified Technical English

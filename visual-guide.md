@@ -143,7 +143,16 @@ or a tensor transformation. Separate these into related figures when combining
 them obscures the question. A main map typically needs 5-9 meaningful blocks;
 use drill-down diagrams for internals, not a giant graph of every symbol.
 These are design starting points, not a node quota or an excuse to omit a
-critical dependency. Prefer a vertical or grouped layout to a long narrow chain.
+critical dependency. Prefer compact grouped layouts to long chains in either
+direction.
+
+Check what information the figure adds. If it is just a list of class names
+joined by arrows, and the component table or source call tree already explains
+that relationship, omit it. Do not use UML class boxes with empty fields/method
+compartments for a delegation path. A class diagram is useful when the reader
+needs to understand inheritance, shared state or repetition; choose a compact
+view of that specific relationship. A tall single-column chain still needs
+editing even when it has only a few nodes and zoom controls.
 
 Inspect at the actual article width and a mobile width. If fitting the diagram
 makes labels too small, shorten labels, simplify grouping or split the figure.

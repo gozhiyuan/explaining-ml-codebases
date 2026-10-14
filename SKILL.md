@@ -436,7 +436,7 @@ loading after moving the HTML and its asset folder to a separate directory.
 | Example | the running example, small numbers | the running example, worked through each sub-step |
 | Math | intuition, at most one formula | every formula the code computes, with a numeric example |
 | Under the hood | only if it changes what the reader does | engine, parallelism, memory, hardware use, measured timings when you ran it |
-| Diagram | one big-picture diagram per doc | ASCII call tree or shape flow per step. Across the doc set: a `flowchart` of stages, a `classDiagram` of components, and a `sequenceDiagram` per hot path (training step, request) |
+| Diagram | a useful big-picture view | Call trees and shape flows for source detail; architecture, sequence or ownership figures chosen by the question. No diagram-type quota or repeated class-name chains |
 | Tests | command + what it proves | table: step, test, command, status, what it asserts; plus gaps |
 
 ## Section format map: each stage is explained differently
