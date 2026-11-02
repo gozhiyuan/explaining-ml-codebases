@@ -53,8 +53,13 @@ assumptions, source symbols and evidence status (see `visual-guide.md`). Link
 editable visual sources under `assets/`. Only then clean the temporary drafts.
 
 On revision, update evidence for affected subsystems and visuals. Preserve
-unchanged records; do not replace the ledger with an empty one when `.work/`
-is absent. Use the same format when writing facts sequentially without
+unchanged records. When `evidence.json` already exists, `collect_evidence.py`
+merges into it: facts for a doc replace that doc's stored subsystem, other
+subsystems stay, and visual briefs merge by `id`. `--example` is optional
+then, and the stored running example is kept. Write only the changed facts and
+briefs to `.work/`, run the collector, and check the step count it prints.
+With no `.work/` at all, the collector keeps the stored subsystems and updates
+the commit. Use the same format when writing facts sequentially without
 subagents. A downstream writer should reopen source for new or disputed
 claims and retain the explained commit. This package does not publish articles
 or apply a personal site's formatting.

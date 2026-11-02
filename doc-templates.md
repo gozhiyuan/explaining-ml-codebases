@@ -145,7 +145,7 @@ decisions, and which new doc traces source behavior and tests.>
 
 <2-3 sentences: what this subsystem does and when it runs.>
 
-This doc is **not** <sibling topic>. See [<sibling>.md](<sibling>.md).
+This doc covers <this subsystem's scope>. <Sibling topic> is in [<sibling>.md](<sibling>.md).
 
 <Contents block. See "Contents" below.>
 
@@ -177,6 +177,34 @@ meet in the doc:
 |------|----------|----------------|----------|---------|
 | <step ID> | <actual artifact> | <type and dimensions> | <observed location> | <shared example, labeled with provenance> |
 
+## Worked example
+
+<The running example traced through this subsystem, one short numbered step
+per stage, with the measured value at each step. End each step with
+"Code: <step ID>". This section holds the full numbers trace: every row,
+vector and sum the reader follows end to end.>
+
+The worked example and the step sections divide the work. The worked example
+is the story of one input, told in numbers. Each `<code>.<Letter><n>` step is
+the reference for one piece of code: its idea, excerpt, mechanism, math and
+test. A step section shows one or two sample lines for its Input and Output,
+then points back to the worked example step for the full table. It does not
+copy that table. A long derivation, such as the math inside a model, belongs
+in its own step section with its own Tests entry, not inside the worked
+example.
+
+The worked example covers every step that changes the input's state, in
+execution order. That includes framework mechanics the reader would otherwise
+skip: an embedding lookup, a tensor marked for gradients, a hook that replaces
+a module output. Give each such step its real values and the tensor state that
+matters (shape, `requires_grad`, `grad_fn`), then a "Code: <step ID>" link. A
+trace that jumps from the inputs straight to the outputs hides the part the
+reader finds hardest. The mechanism and its excerpt stay in the step section.
+
+Steps in the worked example are numbered, and other sections cite them
+("worked example step 7"). After inserting, removing or reordering steps,
+search the doc set for each cited step number and update it.
+
 ## <code>.A <Stage group name>
 
 <Plain purpose sentence, a short list of meaningful actions and an input/output
@@ -193,10 +221,10 @@ pair when this group introduces a mechanism. Then the detailed steps below.>
 | Topic | Reference | This code | Example where it matters |
 |-------|-----------|-----------|--------------------------|
 
-## What this stack is not
+## Methods outside this path
 
-| Path | Difference |
-|------|------------|
+| Method or path | What this code does instead |
+|----------------|-----------------------------|
 
 ## Verification checklist
 

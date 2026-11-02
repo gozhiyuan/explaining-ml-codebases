@@ -16,6 +16,7 @@ read them for more detail. This file is enough on its own.
 - **Say it where it is used.** Do not make the reader jump to another section to decode a label. Repeat the short definition in place.
 - **Concrete over abstract.** Every abstract sentence gets an example within a few lines.
 - **No arrow chains in prose.** "A -> B -> C fails" goes in a diagram. In prose, write a sentence.
+- **Explain in positive statements.** Say what the code does: "PyTorch stores `.grad` on leaves only" rather than "it does not store `.grad` on intermediate tensors". Use "not" only to correct a misreading the reader is likely to make, once, next to the correct statement. A section that reads as a list of denials is answering questions the reader never asked.
 
 ### Give the reader an easy entry into deep detail
 
@@ -80,6 +81,42 @@ configuration, not a shape to assume in another repository.
 Pseudo-code is fine in prose or in a diagram, never dressed up as a real
 excerpt. The doc checker compares each labeled excerpt with the file and warns
 when the code has changed.
+
+### Trace framework calls at runtime
+
+A call such as a forward hook, `detach()`, `requires_grad_()`, `torch.no_grad()`,
+a custom autograd function, a JAX transform or a Spark UDF does work that the
+excerpt alone does not show. For each such call, capture one real invocation
+on the running example and show it:
+
+1. The arguments the call receives, with type, shape and a sample. For a hook,
+   name each argument (`module`, `args`, `output`).
+2. The state that matters before the call. For tensors: dtype, shape,
+   `requires_grad`, `grad_fn`, `is_leaf`, device.
+3. The value it returns and the same state after the call.
+4. Why the code needs it: the concrete failure without it, measured if you can
+   ("the embedding output has `grad_fn = None`, so backward ends before it").
+5. The cleanup, if any, and the state after it (handles removed, hook count 0).
+
+Get these values by wrapping or hooking the real call in a CPU snippet. Number
+the stages and keep each stage's sample next to its sentence.
+
+When a mechanism looks heavier than needed, show the simpler options a reader
+would try first, each with its real result. For a forward hook on an
+embedding, that means marking the integer ids, calling `backward()` from the
+plain output, and reading the shared weight gradient. Print the actual error
+message or the wrong-shaped result. A reader accepts the mechanism once the
+alternatives fail in front of them.
+
+### Measure model internals from the running example
+
+When a section explains what happens inside the model (attention weights,
+per-layer gradients, hidden states), extract those tensors from the running
+example with hooks or a hand-built rebuild of the layer. A hand-made toy
+example needs an explicit `illustrative` label and a stated link to the real
+shapes, or it confuses the reader. Prefer the measured version. If you rebuild
+a layer by hand to split a computation into paths, check that the rebuild
+matches the framework's own result within a stated tolerance, and record it.
 
 ### Show the data, not only the code
 
@@ -182,11 +219,26 @@ knows nothing about this repo or this ML subfield".
 ### Precision rules
 
 - **Shapes** use named dims with values from the selected configuration and the running example. Define each dim once per doc in a dims table. Do not label an invented shape as production.
+- **Dims tables** name every letter in words. They give its value in the production config and in the running example, side by side. They also show one sample along that dim ("`C = 3` channels: red is channel 0, green 1, blue 2"). A reader who meets `[B, C, H, W]` should never need to ask what `C` is, or confuse the size of a dim with a value inside it.
 - **Units** on every number: hours, ms, bytes, tokens, rows.
 - **Defaults** name their defining symbol and file at the selected commit. Read the value there instead of copying a default from this guide.
 - **Formulas** define every symbol, then show a numeric example from the running example.
+- **Measured values keep full precision** in the evidence files (JSON beside the assets). Round only when you show a number, and say how many decimals. Never back-solve one value from other rounded values: a quantity derived that way drifts from the real one. Recompute it from the stored full-precision values, or measure it directly. Rounded values in a doc may not add up to the total shown. Say so on the same line ("total at full precision, the rounded terms above add to 1.002").
 - **Call order** goes in a call tree, not in prose.
 - **Counts** come from code or a run. If you estimate, say "about" and how you estimated.
+
+### Math in deep docs
+
+Write every formula as LaTeX. `render_html.py` renders `$$ ... $$` display
+blocks and `\( ... \)` inline math with KaTeX. A formula written as plain text
+in a `text` code block shows as monospace symbols and is hard to read.
+
+- **Notation table first.** Before the first formula, list each symbol, its meaning in words and its shape on the running example. Use one letter for one thing across the doc set.
+- **One step, one equation.** In a multi-step derivation such as a forward or a backward pass, give each step a bold lead-in sentence. Give it its own display block. Use `aligned` for a short sequence of equal-width lines.
+- **Name gradients in full.** Write \(\partial L / \partial v^h_k\), not `dv^h_k`. Use `\underbrace` to label a term such as the residual.
+- **Numbers stay as text.** Put measured vectors and tables in `text` blocks or Markdown tables, under the equation they instantiate.
+- **Syntax that renders.** Start a `$$` block on its own line. Inside a Markdown table cell use `\lvert x \rvert` and `\lVert x \rVert`, because a bare `|` splits the cell. Prefer `\,` over `\;` for spacing (see Lint).
+- **Host limits.** Bitbucket and some other hosts show the raw LaTeX source. Say so once, above the notation table, when the doc set has an HTML view.
 
 ### Worked deep example
 
@@ -206,4 +258,7 @@ python "$STE_SKILL_DIR/scripts/ste-lint.py" --disable passive-voice docs/explain
 ```
 
 Fix hard violations in prose. Identifiers and quoted log lines may trip the
-length or phrasal-verb checks. Leave those as they are.
+length or phrasal-verb checks. Leave those as they are. Recent versions of the
+linter skip `$$ ... $$` and `\( ... \)` math. An older version may report a
+LaTeX `\;` as a semicolon, or `\begin` as a synonym of "start". Treat those as
+false positives.

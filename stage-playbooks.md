@@ -35,6 +35,7 @@ test command.
 14. Variant families (losses, optimizers, schedulers, and other plug-ins)
 15. Privacy, security, and data governance
 16. Training cluster and job infrastructure
+17. Explanations and attributions (gradients at inference)
 
 ---
 
@@ -481,3 +482,37 @@ preempt and resume.
 
 **Tests to look for.** A tiny multi-process run on CPU with the `gloo`
 backend. A resume-from-checkpoint test. A manifest lint or dry run.
+
+## 17. Explanations and attributions (gradients at inference)
+
+Show this when serving or evaluation code computes feature attributions:
+gradient × input, integrated gradients, saliency, attention rollout, SHAP or
+LIME wrappers, Captum calls. Readers often confuse this backward pass with
+training, so state the difference at the start.
+
+**Must show.**
+- **Target scalar.** What `backward()` differentiates: a logit, a centered logit, a probability, a loss. Show the excerpt, the decoded class it uses, and its value on the running example. Say whether the class choice is detached.
+- **Recording and marking.** `torch.enable_grad()` (or a missing `no_grad`) turns recording on. PyTorch records an operation only when one of its inputs has `requires_grad=True`, and `backward()` fills `.grad` later. Readers often assume the context manager computes gradients. Show a short runtime check inside the context: an unmarked tensor has `grad_fn = None`, and a marked one has a `grad_fn`.
+- **Leaves.** Which tensors receive `.grad`, and how the code makes each one a leaf: a `detach().clone().requires_grad_()` copy, a forward hook on an embedding, `retain_grad()`. Give one runtime trace per mechanism (see "Trace framework calls at runtime" in writing-modes.md): `requires_grad`, `grad_fn` and `is_leaf` before and after, and `.grad` after the backward.
+- **Gradient per input channel, measured.** List every input channel of the model's `forward`: numeric, categorical, text or event embeddings, multi-label ids, positions. For each one, say whether it holds a gradient after `backward()`. Read `.requires_grad` and `.grad` on each tensor in a CPU run. A channel that shapes the prediction can still stay unmarked, with no attribution. State that from the measurement, never from reading the code.
+- **Frozen weights.** Whether parameters have `requires_grad=False`, and the measured fact that their `.grad` stays `None`. Intermediate outputs keep `.grad = None` too.
+- **One backward, many positions.** For a sequence model, show that one call fills a gradient at every position. Show how the position that reads the logit differs from the others. Give a per-position, per-layer table of gradient size from the running example.
+- **The math, layer by layer.** Write the forward equations of one block as LaTeX. Then write the backward equations in order: residual, value path, softmax backward, key and query paths, input projection. Give each one a numeric instance from the running example.
+- **Aggregation.** How per-position, per-dimension gradients become one score per feature. Cover the product with the input or a baseline, the mask, and the sum over positions. Then cover the roll-up of several columns into one shown name, and its sign rule. Show the full sums for the running example once.
+- **Names and drops.** The mapping from model inputs to the names a UI or report shows, and which inputs are dropped before ranking.
+- **Baselines.** The baseline each input type uses: zero, the population mean, or a mean embedding row. Name the inputs whose zero value gives a zero attribution by construction.
+
+**Verification.** Rebuild one layer by hand from its weights, run the backward
+with the same upstream gradient, and check the input gradient against the
+framework's own result within a stated tolerance. Record the tolerance. Then
+the per-path split (residual, value, key, query) is a measurement, not a
+derivation on paper.
+
+**Diagrams.** A per-position network grid: one node per position per layer,
+edge widths from measured attention weights, node fill from measured gradient
+size. Close-ups for one value path and one key path with the vectors drawn as
+colored cells.
+
+**Tests to look for.** Explanations leave predictions unchanged. Padding
+positions contribute 0. A zero input gives a zero score. Chunked and unchunked
+runs agree. Parameter `.grad` stays `None` after the explain call.

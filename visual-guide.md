@@ -59,6 +59,46 @@ logical ordering without a performance scale when timings are not measured.
 Make omitted branches explicit. A generic animation must not stand in for
 explaining the chosen implementation.
 
+### Math and model videos are data-driven diagrams
+
+For a mathematical or model mechanism (attention, a backward pass, a loss, a
+layer stack), the default video draws the structure and moves real values
+through it. It is not a sequence of text slides.
+
+1. **Measure first.** Write a script beside the assets that runs the running
+   example and saves every value the scene shows to JSON, at full precision.
+   The scene reads only that JSON. Keep the script, the JSON and the scene
+   source under `assets/`. These scripts live in the repo, so the repo's
+   linters and pre-commit hooks usually run on them. Check the hook's
+   exclusions first. Keep the scripts clean, or add one targeted file-level
+   waiver, such as `# ruff: noqa: <codes>` for annotation and docstring rules.
+   Leave real findings, such as a closure over a loop variable, fixed rather
+   than waived.
+2. **Draw the structure.** One node per position per layer, laid out as a grid.
+   Residual or same-position links are thin vertical lines. Cross-position
+   links (attention) are edges whose width is the measured weight. Say in a
+   caption how values were combined, for example "averaged over heads".
+3. **Animate the state change.** Fill nodes from measured values (a log color
+   scale for gradient sizes), one layer at a time, in the order the computation
+   runs. Put the number under each node.
+4. **Close-ups for each equation.** Cover the grid with a dark panel and show
+   one calculation with its operands drawn as rows of colored cells (blue
+   positive, red negative), one cell per vector entry, with values under the
+   cells. Align rows that multiply entry by entry on a fixed step. Show the
+   result row and the total.
+5. **Captions carry the step, not the explanation.** One short sentence per
+   beat. A frame that holds only sentences belongs in the doc, not the video.
+
+Before rendering with `MathTex`, check for a TeX install (`which latex`). When
+it is missing, use `Text` with Unicode subscripts and plain operators, or
+install a minimal TeX distribution if setup is authorized. Inspect stills from
+the start, each close-up and the end at full resolution. A frame captured
+mid-fade is normal. A misaligned row or an unreadable label is a defect.
+
+The trace player and its MP4 export show discrete text panels. Use them for
+state machines such as a scheduler, a cache or a request lifecycle, where each
+state is a list of facts. Use a data-driven scene for math and model internals.
+
 The bundled token-flow, cache-reuse and attention scenes are rendering starters
 with narrow examples. Use them only when they answer the article's question;
 adapt the scene or author original code for other mechanisms. The three-template
@@ -321,6 +361,42 @@ copying the export to another directory. Test iframe controls inside the docs
 page. Missing assets are renderer errors. A file being generated does not
 prove it displays correctly. If browser inspection is unavailable, state which
 checks remain unverified and keep the usable static fallback.
+
+Practical checks for the HTML view:
+
+- Serve the folder over HTTP (`python -m http.server --directory docs/explain`). Some embedded browsers block `file://` URLs.
+- Add a cache-busting query to the URL after each render (`explain.html?v=2#/index.md`). A cached copy shows the old content with no error.
+- Read the page state with a script as well as a screenshot. `window.explainDiagramErrors` must be 0. The count of `.katex-error` elements must be 0. Each `<video>` must reach `readyState` 4 with the expected `duration`.
+- For a screenshot of one section, scroll to its heading in a headless browser (Playwright with the installed Chrome channel) and capture that viewport. An embedded browser pane can keep showing a stale frame after the DOM changes.
+
+### Committed output and repo size
+
+When the user commits the doc set, every render and every media file adds to
+the repo's history. Check the repo before you choose formats:
+
+1. **Read `.gitignore` for media rules.** A repo can ignore `*.png` or other
+   image types to keep plot output out of git. Add a scoped exception, such as
+   `!docs/explain/**/*.png`, with a comment, rather than switching formats to
+   slip past the rule. Ask the user which they prefer.
+2. **Keep videos out of git.** Add `docs/explain/**/*.mp4` to `.gitignore`.
+   Keep the scene source, the measurement scripts and their JSON in git, plus
+   the commands that rebuild the video. Remove the video embed from the
+   Markdown so the committed HTML does not point at a missing file.
+3. **Size figures for the page.** At most 1280 px wide. Use SVG for diagrams.
+   Quantize a rendered frame to a small palette (for example 64 colors with
+   FFmpeg `palettegen` and `paletteuse`). Aim for about 150 KB or less per
+   figure, and inspect the result at full size.
+4. **Embed each image once.** `render_html.py` embeds an image every time a
+   doc references it. Show a figure in one doc, and link to that section from
+   the others.
+5. **Render a standalone page.** In the default `auto` mode, images up to
+   5 MB are embedded, so `explain.html` needs no asset folder. Write a file
+   inside the doc set as a code path, not a link. The renderer copies linked
+   files into `explain.assets/`, which breaks after a clone when that folder
+   is ignored. Add `docs/explain/**/explain.assets/` to `.gitignore`.
+6. **Check the result.** Re-render, confirm "copied: 0" in the renderer
+   summary, and note the HTML size. Most of that size is the embedded images,
+   so a large page points at a figure to shrink.
 
 Tool sources: [Rough.js](https://roughjs.com/),
 [Playwright screenshots](https://playwright.dev/docs/screenshots),

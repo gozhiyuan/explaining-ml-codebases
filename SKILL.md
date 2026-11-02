@@ -308,7 +308,8 @@ from the writers' dims tables and shape flows. Then:
 - Every function or key you name yourself in `index.md`, you open and read first.
 - Read each doc once as a newcomer. If a paragraph is a chain of names and paths with no code and no example, replace it with an excerpt and a walkthrough.
 - Check that overview and mechanism openings explain purpose, actions and the shared example before introducing implementation detail. Keep reference-only sections brief.
-- Add cross-links. Each sub-doc says what it is **not** and links the sibling that covers it.
+- Add cross-links. Each sub-doc says what it covers and links the sibling that covers the neighboring topic. Write in positive statements (see "Explain in positive statements" in [writing-modes.md](writing-modes.md)).
+- Keep the worked example and the step sections apart: the worked example holds the numbers trace, and each step section holds the code, mechanism and math with one sample line. See "Worked example" in [doc-templates.md](doc-templates.md).
 - If existing docs were found, add the "Coverage of existing docs" table to `index.md`: each must-cover topic, where this doc set covers it, or why it is out of scope. Link the existing docs. Say which one is the source of truth for what.
 - Shorten paths. A sub-doc whose code lives under one folder declares it once, `<!-- explain-root: <actual scope path> -->`, plus a visible line naming that same path. Then it writes `src/train.py`, not the full path.
 - Add a contents block to each doc over ~150 lines. The form depends on the host (`[TOC]` on Bitbucket). See "Contents" in [doc-templates.md](doc-templates.md).
@@ -467,6 +468,7 @@ own main visual and its own main example. The full list is in
 | Labeling and data quality | annotation flow | one item from raw input to adjudicated label | 2, archetype R |
 | Privacy and governance | where sensitive fields enter and get protected | one record before and after masking, with fake values | 15 |
 | Training cluster | topology flowchart, job lifecycle sequence | the launch script and the rank environment | 16 |
+| Explanations and attributions | per-position network grid with measured gradient sizes | one input from target scalar to ranked feature names, with the layer-by-layer backward math | 17 |
 | Native code (C/C++, Rust, Go) | call tree across the language boundary | the data that crosses the boundary, typed on both sides | framework notes |
 
 A repo type with its own checklist ([ml-archetypes.md](ml-archetypes.md))
